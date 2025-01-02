@@ -1,0 +1,87 @@
+services: 
+  monitor:
+    image: dockurr/windows
+    container_name: monitor
+    devices:
+      - /dev/kvm
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8006:8006"
+      - "3389:3389/tcp"
+      - "3389:3389/udp"
+    stop_grace_period: 2m
+    restart: on-failure
+    environment:
+      VERSION: "2022"
+      RAM_SIZE: ${MONITOR_RAM_SIZE}
+      CPU_COUNT: ${MONITOR_CPU_COUNT}
+      DISK_SIZE: ${MONITOR_DISK_SIZE}
+      USERNAME: "${MONITOR_USERNAME}"
+      PASSWORD: "${MONITOR_PASSWORD}"
+    volumes:
+      - ./winserver/storage:/storage
+      -  /winserver-fileshare:/data
+    networks:
+      - cunet
+    
+  # Optional MacOS container
+  macos:
+    image: dockurr/macos
+    container_name: macos
+    environment:
+      VERSION: "13"
+      RAM_SIZE: ${MACOS_RAM_SIZE}
+      CPU_CORES: ${MACOS_CPU_CORES}
+      DISK_SIZE: ${MACOS_DISK_SIZE}
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8007:8006
+      - 5900:5900/tcp
+      - 5900:5900/udp
+    volumes:
+      - ./macos:/storage
+    stop_grace_period: 2m
+    networks:
+      - cunet
+
+  # Optional Linux EdgeDX Agent
+  edge-1:
+    container_name: "edge-1"
+    env_file: .env
+    hostname: "edge-1"
+    build:
+      context: ./edge/debian
+      dockerfile: dockerfile
+      args:
+        TENANT: ${TENANT}
+        DEVREGCODE: ${DEVREGCODE}
+        EDGEGROUP: ${EDGEGROUP}
+    volumes:
+      - ./edge/edge_1_data:/usr/local/avacee/sip_agent
+    networks:
+      - cunet
+  
+  # Optional, you can spin up several tiny edgedx agents that wont persist data
+  edge-temp:
+    env_file: .env
+    build:
+      context: ./edge/debian
+      dockerfile: dockerfile
+      args:
+        TENANT: ${TENANT}
+        DEVREGCODE: ${DEVREGCODE}
+        EDGEGROUP: ${EDGEGROUP}
+    # Depending on your hardware, you can easily go up tp 100 agents.
+    deploy:
+      replicas: 0
+    networks:
+      - cunet
+
+networks:
+  cunet:
+    driver: bridge

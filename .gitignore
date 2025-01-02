@@ -1,0 +1,9 @@
+.env
+samba-data/
+traefik.yml
+*Zone.Identifier
+winserver/
+edge_*_data/
+macos/
+avaceesipagent-linux
+monitorsetup/ControlUpConsole.exe
