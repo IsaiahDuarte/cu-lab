@@ -213,7 +213,7 @@ Refer to the Repo Guide [here](https://github.com/dockur/macos?tab=readme-ov-fil
 - sudo docker compose down - Stop and delete the containers/network
 - sudo docker stop monitor - Stop the monitor container
 - sudo docker compose up -d - Creates/Recreates docker containers and network
-- C:\Users\%username%\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc\LocalState - Is where WSL installs Distros
+- C:\Users\\%username%\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc\LocalState - Is where WSL installs the Ubuntu distro.
 
 ## Repositories Used
 
