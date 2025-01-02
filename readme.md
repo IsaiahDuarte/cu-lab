@@ -86,7 +86,7 @@ ip a | grep "eth0"
 To SSH from the host:
 
 ```bash
-ssh username@192.YourIp
+ssh username@Your.IP.Address
 ```
 
 ---
@@ -102,7 +102,7 @@ git clone https://github.com/IsaiahDuarte/cu-lab.git
 cd ~/cu-lab
 ```
 
-You can open this directory in File Explorer by navigating to `\\wsl.localhost\Ubuntu\home\oliver\cu-lab`.
+You can open this directory in File Explorer by navigating to `\\wsl.localhost\Ubuntu\home\yourusername\cu-lab`.
 
 Rename `.env.example` to `.env`.
 
@@ -119,7 +119,7 @@ Once signed into DEX:
 1. Start an **EdgeDX trial**.
 2. While waiting for provisioning, download and extract the [RT-DX Console](https://www.controlup.com/download-center/?type=console).
 3. Copy the `.exe` to the `MonitorSetup` folder. You can open Ubuntu's files through Explorer: `~/cu-lab/ControlUpConsole.exe`.
-4. Rename `.env.example` to `.env` if you haven't already.
+4. Rename `.env.example` to `.env` if you haven't already. Please modify the .ENV to your needs
 5. After EdgeDX provisioning is complete, go to the download section inside EdgeDX and copy the **Tenant Name** and **Device Registration Code** to the `.env` file.
 6. Download the **Linux (x64) agent** and save it to `~/cu-lab/edge/debian/install/avaceesipagent-linux`.
 
