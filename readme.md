@@ -2,72 +2,95 @@
 
 ## Setup
 
-### Install WSL
-Please install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) by doing:
+### 1. Install WSL
+To get started, please install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) by running the following commands:
+
 ```bash
 wsl.exe --install ubuntu
 wsl.exe --update
-``` 
-Note: This will prompt to set a username/password. You can open Ubuntu by searching in the start menu for "Ubuntu"
+```
+
+**Note:** You will be prompted to set a username and password. Once done, you can access Ubuntu by searching for "Ubuntu" in the Start menu.
 
 ![wsl.exe install](images/{CD19FD20-9B45-478E-A0F1-F40B49793D90}.png)
 
-### Install Docker CE and qemu-kvm
+---
+
+### 2. Install Docker CE and QEMU-KVM
+
+Run the following steps to ensure Docker CE and QEMU-KVM are properly installed:
+
 ```bash
-# Ensures not older packages are installed
+# Remove older packages (if any)
 sudo apt-get remove docker docker-engine docker.io containerd runc
 
-# Ensure pre-requisites are installed
+# Install necessary pre-requisites
 sudo apt-get update
 sudo apt-get install \
-ca-certificates \
-curl \
-gnupg \
-lsb-release
+  ca-certificates \
+  curl \
+  gnupg \
+  lsb-release
 
-# Adds docker apt key
+# Add Docker apt key
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
-# Adds docker apt repository
+# Add Docker apt repository
 echo \
-"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Refreshes apt repos
+# Refresh apt repositories
 sudo apt-get update
 
-# Installs Docker CE
+# Install Docker CE
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Install qemu-kvm
+# Install QEMU-KVM
 sudo apt-get install qemu-kvm
 ```
 
-Verify KVM support
+#### Verify KVM support:
 ```bash
 sudo kvm-ok
 ```
 
-You should see this
+You should see:
+
 ```bash
 INFO: /dev/kvm exists
 KVM acceleration can be used
 ```
 
-### SSH - Optional
+---
+
+### 3. (Optional) Install SSH
+
+If you want to connect remotely, install the SSH server:
+
 ```bash
 sudo apt install openssh-server
+```
 
-# View Ip
+To view your IP address:
+
+```bash
 ip a | grep "eth0"
+```
 
-# SSH from host
+To SSH from the host:
+
+```bash
 ssh username@192.YourIp
 ```
 
-### Clone the repository
-While still in wsl ubuntu, clone the repo:
+---
+
+### 4. Clone the Repository
+
+While still in WSL Ubuntu, clone the `cu-lab` repository:
+
 ```bash
 cd ~/
 mkdir cu-lab -m 777
@@ -75,69 +98,118 @@ git clone https://github.com/IsaiahDuarte/cu-lab.git
 cd ~/cu-lab
 ```
 
-You can open this directory in file explorer through \\\\wsl.localhost\Ubuntu\home\oliver\cu-lab
-Rename .env.exmaple to .env
+You can open this directory in File Explorer by navigating to `\\wsl.localhost\Ubuntu\home\oliver\cu-lab`.
 
-### Prerequsites
-Please follow the guide here - https://support.controlup.com/docs/create-your-controlup-organization
+Rename `.env.example` to `.env`.
 
-Once signed into DEX with the new org:
-1. Start an EdgeDX trial
-2. While waiting for provisioning, download and extract the [RT-DX Console](https://www.controlup.com/download-center/?type=console)
-3. Copy the exe to the MonitorSetup folder. You can [open ubuntu's files through explorer](#clone-the-repository). ~/cu-lab/ControlUpConsole.exe
-4. Reanme .env.example to .env if you haven't already
-4. Once EdgeDX is done provisioning, go to the download section inside EdgeDX and copy the Tenant Name and Device Registration Code to the .env file
-5. Download the linux (x64) agent and save to ~/cu-lab/edge/debian/install/avaceesipagent-linux
+---
 
-### Starting cu-lab
-- Open Ubuntu and navigate to ~/cu-lab
-- Run "sudo docker compose up -d"
+### 5. Prerequisites
 
-At this point, you should see one device in EdgeDX and be able to access Windows Server and MacOS with these links:
-Windows Server - http://localhost:8006
-MacOS - http://localhost:8007
+Follow the guide [here](https://support.controlup.com/docs/create-your-controlup-organization) to create your ControlUp organization.
 
-#### Windows Server 2022 
-- Connect to Windows Server with http://localhost:8006 and wait till you get to the desktop (10-20 minutes)
-- Once on the desktop, you can RDP into it using the ip returned from ubuntu: ip a | grep "eth0"
-- Copy the monitorsetup folder from the repo and paste onto the desktop
-- Open admin powershell and run this: Set-ExecutionPolicy Bypass
-- Then run this: . "$ENV:USERPROFILE\Desktop\monitorsetup\deploy-ad.ps1" - you will be disconnected
-- Wait a few minutes then reconnect the RDP session, then repeat the step above. You will be asked to set the DSRM password and reboot
-- Run the script one more time to set the NTP settings
+Once signed into DEX:
 
-#### RT-DX Environment Setup
-- Run the ControlUpConsole.exe inside of the monitorsetup folder and login to DEX with the new org
-- Deploy the monitor through the monitor status
+1. Start an **EdgeDX trial**.
+2. While waiting for provisioning, download and extract the [RT-DX Console](https://www.controlup.com/download-center/?type=console).
+3. Copy the `.exe` to the `MonitorSetup` folder. You can open Ubuntu's files through Explorer: `~/cu-lab/ControlUpConsole.exe`.
+4. Rename `.env.example` to `.env` if you haven't already.
+5. After EdgeDX provisioning is complete, go to the download section inside EdgeDX and copy the **Tenant Name** and **Device Registration Code** to the `.env` file.
+6. Download the **Linux (x64) agent** and save it to `~/cu-lab/edge/debian/install/avaceesipagent-linux`.
 
-#### EdgeDX on Monitor
-- You can deploy EdgeDX on the same windows server by following the steps in the download section in DEX
+---
 
-#### Scoutbees on Monitor
-- Start a free trial in DEX
-- Create a Custom Hive by downloading the installation and following the guide.
+### 6. Starting `cu-lab`
 
-#### SecureDX on Monitor
-- Start trial and follow stpes
+To start the lab, open Ubuntu and navigate to `~/cu-lab`. Then, run:
 
-#### MacOS - optional
-Do this after Windows Server is setup to not take up too many resources.
-Repo Guide [here](https://github.com/dockur/macos?tab=readme-ov-file#faq-)
-- Connect to MacOS with http://localhost:8007
-- Choose Disk Utility and then select the largest Apple Inc. VirtIO Block Media disk.
-- Click the Erase button to format the disk to APFS, and give it any recognizable name you like.
-- Close the current window and proceed the installation by clicking Reinstall macOS.
-- When prompted where you want to install it, select the disk you just created previously.
+```bash
+sudo docker compose up -d
+```
 
-Once its installed
-- Follow the setup and avoid extra services (like signing into apple id)
-- Launch Safari and go to app.controlup.com and sign in
-- Download and install the EdgeDX Agent
+At this point, you should see one device in EdgeDX and be able to access Windows Server and macOS using the following links:
 
-## Repos Used
-- https://github.com/dockur/macos
-- https://github.com/dockur/windows
+- **Windows Server**: [http://localhost:8006](http://localhost:8006)
+- **macOS**: [http://localhost:8007](http://localhost:8007)
+
+---
+
+#### Windows Server 2022 Setup
+
+1. Connect to Windows Server using [http://localhost:8006](http://localhost:8006) and wait for the desktop to load (10-20 minutes).
+2. Once on the desktop, you can RDP into it using the IP returned from Ubuntu:
+
+    ```bash
+    ip a | grep "eth0"
+    ```
+
+3. Copy the `monitorsetup` folder from the repo and paste it onto the desktop.
+4. Open **Admin PowerShell** and run the following command:
+
+    ```bash
+    Set-ExecutionPolicy Bypass
+    ```
+
+5. Run this command to deploy:
+
+    ```bash
+    . "$ENV:USERPROFILE\Desktop\monitorsetup\deploy-ad.ps1"
+    ```
+
+   After this, you will be disconnected. Wait a few minutes, then reconnect the RDP session and repeat the step above. You will be prompted to set the **DSRM password** and reboot.
+6. Run the script one more time to set the **NTP settings**.
+
+---
+
+### 7. RT-DX Environment Setup
+
+- Run the `ControlUpConsole.exe` inside the `monitorsetup` folder and log in to DEX with your new organization.
+- Deploy the monitor through the **monitor status**.
+
+---
+
+### 8. EdgeDX on Monitor
+
+You can deploy EdgeDX on the same Windows server by following the steps in the download section inside DEX.
+
+---
+
+### 9. Scoutbees on Monitor
+
+1. Start a free trial in DEX.
+2. Create a **Custom Hive** by downloading the installation and following the guide.
+
+---
+
+### 10. SecureDX on Monitor
+
+Start the trial and follow the steps to complete the setup.
+
+---
+
+### 11. macOS (Optional)
+
+After the Windows Server setup, you can proceed with macOS to save resources.
+
+Refer to the Repo Guide [here](https://github.com/dockur/macos?tab=readme-ov-file#faq-).
+
+1. Connect to macOS using [http://localhost:8007](http://localhost:8007).
+2. Open **Disk Utility**, select the largest Apple Inc. VirtIO Block Media disk, and click the **Erase** button to format the disk to **APFS**. Give it a recognizable name.
+3. Close the window and proceed with the installation by selecting **Reinstall macOS**.
+4. When prompted where to install, select the disk you just created.
+5. Once installed, follow the setup and skip unnecessary services (like signing into Apple ID).
+6. Launch **Safari** and go to [app.controlup.com](https://app.controlup.com) to sign in.
+7. Download and install the **EdgeDX Agent**.
+
+---
+
+## Repositories Used
+
+- [macOS Repo](https://github.com/dockur/macos)
+- [Windows Repo](https://github.com/dockur/windows)
+
+---
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
