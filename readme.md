@@ -2,6 +2,10 @@
 
 ## Setup
 
+### System Requirements
+10 GBs of free RAM (i know)
+30 GBs of free space
+
 ### 1. Install WSL
 To get started, please install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) by running the following commands:
 
@@ -101,6 +105,8 @@ cd ~/cu-lab
 You can open this directory in File Explorer by navigating to `\\wsl.localhost\Ubuntu\home\oliver\cu-lab`.
 
 Rename `.env.example` to `.env`.
+
+Open and modify the .ENV file to your needs. Like changing the username and password of the VMs
 
 ---
 
@@ -202,6 +208,12 @@ Refer to the Repo Guide [here](https://github.com/dockur/macos?tab=readme-ov-fil
 7. Download and install the **EdgeDX Agent**.
 
 ---
+
+## Useful Commands / Tips
+- sudo docker compose down - Stop and delete the containers/network
+- sudo docker stop monitor - Stop the monitor container
+- sudo docker compose up -d - Creates/Recreates docker containers and network
+- C:\Users\%username%\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc\LocalState - Is where WSL installs Distros
 
 ## Repositories Used
 
