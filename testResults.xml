@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="1" errors="0" failures="0" not-run="59" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-01-04" time="00:15:49">
+  <environment clr-version="4.0.30319.42000" user-domain="POWERSHELL" cwd="E:\cu-lab" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" machine-name="POWERSHELL" nunit-version="2.5.8.0" os-version="10.0.26120" user="Isaiah Duarte" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.7869" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="D:\OneDrive\PFiles\Documents\WindowsPowerShell\Modules\AutomatedLabTest\5.55.0\tests\00General.tests.ps1" executed="True" result="Success" success="True" time="0.6152" asserts="0" description="D:\OneDrive\PFiles\Documents\WindowsPowerShell\Modules\AutomatedLabTest\5.55.0\tests\00General.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="[culab] General" executed="True" result="Success" success="True" time="0.2086" asserts="0" description="[culab] General">
+            <results>
+              <test-suite type="TestFixture" name="[culab] General.Lab deployment successful" executed="True" result="Success" success="True" time="0.1912" asserts="0" description="[culab] General.Lab deployment successful">
+                <results>
+                  <test-suite type="ParameterizedTest" name="[culab] General.Lab deployment successful.[&lt;LabName&gt;] Should return the correct amount of machines" executed="True" result="Success" success="True" time="0.1609" asserts="0" description="[&lt;LabName&gt;] Should return the correct amount of machines">
+                    <results>
+                      <test-case description="[culab] Should return the correct amount of machines" name="[culab] General.Lab deployment successful.[culab] Should return the correct amount of machines" time="0.1609" asserts="0" success="True" result="Success" executed="True" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
