@@ -1,0 +1,37 @@
+
+{
+    "Description": "This is an example configuration file for a lab with 1 DC server, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server",
+    "LabName": "NestedLab",
+    "DomainName": "nestedlab.internal",
+    "OrgName": "",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": null,
+    "TENANT": null,
+    "VirtualMachines": [
+        {
+            "Name": "monitor",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "2",
+            "DomainName": "macrolab.internal",
+            "Roles": [ "RootDC", "Routing" ],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "HyperVHost",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "2",
+            "DomainName": "macrolab.internal",
+            "Roles": [ "HyperV" ],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        }
+    ]
+}

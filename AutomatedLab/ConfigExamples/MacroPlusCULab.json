@@ -1,0 +1,37 @@
+
+{
+    "Description": "This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)",
+    "LabName": "MacroPlusCULab",
+    "DomainName": "macroplus.internal",
+    "OrgName": "",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "VirtualMachines": [
+        {
+            "Name": "monitor-1",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "1",
+            "DomainName": "macroplus.internal",
+            "Roles": [ "RootDC", "Routing" ],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "win11-1",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "macroplus.internal",
+            "Roles": [ ],
+            "RTDX": true,
+            "EdgeDX": true,
+            "Hive": true,
+            "Monitor": false
+        }
+    ]
+}

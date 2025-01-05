@@ -1,51 +1,25 @@
 
 {
     "Description": "This is an example configuration file for a lab with 1 DC server, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server",
-    "LabName": "MacroLab",
-    "DomainName": "lab.internal",
-    "OrgName": "OnlyAdmins",
+    "LabName": "MacroCULab",
+    "DomainName": "macroculab.internal",
+    "OrgName": "",
     "DriveLetter": "C",
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
-    "RTDevices": [ ],
-    "Monitors": [
+    "VirtualMachines": [
         {
-            "Name": "monitor-1",
-            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "1073741824",
-            "CPU": "1",
-            "DomainName": "lab.internal"
-        }
-    ],
-    "Hives": [
-        {
-            "Name": "monitor-1",
-            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "1073741824",
-            "CPU": "1",
-            "DomainName": "lab.internal"
-        }
-    ],
-    "EdgeDX": [
-        {
-            "Name": "monitor-1",
-            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "1073741824",
-            "CPU": "1",
-            "DomainName": "lab.internal"
-        }
-    ],
-
-    "DomainControllers": [
-        {
-            "Name": "monitor-1",
-            "RootDC": true,
-            "Routing": true,
+            "Name": "monitor",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "4294967296",
-            "CPU": "1",
-            "DomainName": "lab.internal"
+            "CPU": "2",
+            "DomainName": "macroculab.internal",
+            "Roles": [ "RootDC", "Routing" ],
+            "RTDX": true,
+            "EdgeDX": true,
+            "Hive": true,
+            "Monitor": true
         }
     ]
 }

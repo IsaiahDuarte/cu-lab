@@ -1,0 +1,24 @@
+{
+    "Description": "This is an example configuration file for a scoutbees server",
+    "LabName": "MacroSBLab",
+    "DomainName": "",
+    "OrgName": "",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": null,
+    "TENANT": null,
+    "VirtualMachines": [
+        {
+            "Name": "sb-1",
+            "OS": "win11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "",
+            "Roles": [ ],
+            "RTDX": false,
+            "EdgeDX": false,
+            "Hive": true,
+            "Monitor": false
+        }
+    ]
+}
