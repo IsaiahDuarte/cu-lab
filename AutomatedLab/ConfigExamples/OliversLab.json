@@ -1,0 +1,103 @@
+
+{
+    "Description": "This is an example configuration file for a lab with 2 DCs server, 2 monitor (1 being a DC), 2 RT devices (win10, win11), 2 Hives(Win10, Win11), 3 EdgeDX devices (win10, win11, and Ubuntu)",
+    "LabName": "OliversLab",
+    "DomainName": "lab.internal",
+    "OrgName": "OnlyAdmins",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "RTDevices": [
+        {
+            "Name": "rt-1",
+            "OS": "Windows 11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "rt-2",
+            "OS": "Windows 10 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        }
+    ],
+    "Monitors": [
+        {
+            "Name": "monitor-1",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "2",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "monitor-2",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "2147483648",
+            "CPU": "2",
+            "DomainName": "lab.internal"
+        }
+    ],
+    "Hives": [
+        {
+            "Name": "hive-1",
+            "OS": "Windows 11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "hive-2",
+            "OS": "Windows 10 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        }
+    ],
+    "EdgeDX": [
+        {
+            "Name": "edgedx-1",
+            "OS": "Windows 11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "edgedx-2",
+            "OS": "Windows 10 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "edgedx-3",
+            "OS": "Ubuntu 24.04.1 LTS \"Noble Numbat\"",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        }
+    ],
+
+    "DomainControllers": [
+        {
+            "Name": "dc-1",
+            "RootDC": true,
+            "Routing": true,
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "lab.internal"
+        },
+        {
+            "Name": "monitor-1",
+            "IsDC": false,
+            "Routing": false,
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "2",
+            "DomainName": "lab.internal"
+        }
+    ]
+}

@@ -1,24 +1,4 @@
-$DriveLetter = 'E'
-$LabName = 'culab'
-$DomainName = 'lab.internal'
-$OrgName = 'OnlyAdmins'
-$DEXAPIKey = Get-Content -Path .\key
-$TENANT = Get-Content -Path .\tenant
-$DEVREGCODE = Get-Content -Path .\devregcode
-
-
-$MonitorName = 'monitor-1'
-$AgentName = 'rtagent-1'
-$Agent2Name = 'rtagent-2'
-$HiveName = 'sbhive-1'
-$EdgeDXName = 'edgedx-1'
-$Edge2DXName = 'edgedx-2'
-
-$RTDevices = @($MonitorName, $AgentName, $Agent2Name)
-$Hives = @($HiveName)
-$EdgeDXDevices = @($EdgeDXName, $Edge2DXName)
-#$AllDevices = @($MonitorName, $AgentName, $HiveName, $EdgeDXName, $Agent2Name)
-
+$Config = Get-Content -Path .\config.json | ConvertFrom-Json
 
 if(-not(Get-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Hyper-V')) {
     Write-Host "Hyper-V is not installed. Installing Hyper-V now."
@@ -32,71 +12,99 @@ if(-not(Get-Module -Name AutomatedLab -ListAvailable)) {
 }
 Import-Module AutomatedLab
 
-if((Get-LabSourcesLocation -Local) -notlike "${DriveLetter}:\*") {
-    New-LabSourcesFolder -DriveLetter $DriveLetter -Force
+if((Get-LabSourcesLocation -Local) -notlike "$($Config.DriveLetter):\*") {
+    New-LabSourcesFolder -DriveLetter $Config.DriveLetter -Force
 }
-$LabLocation = Get-LabSourcesLocation -Local | Where-Object { $_ -like "${DriveLetter}:\*" }
+$LabLocation = Get-LabSourcesLocation -Local | Where-Object { $_ -like "$($Config.DriveLetter):\*" }
 Write-Host "Lab location is $LabLocation"
 
-if((Get-LabDefinition).Name -contains $LabName) {
-    Write-Host "Lab $LabName already exists. Removing it now."
-    Remove-Lab -Name $LabName
+if((Get-LabDefinition).Name -contains $Config.LabName) {
+    Write-Host "Lab $($Config.LabName) already exists. Removing it now."
+    Remove-Lab -Name $Config.LabName -Confirm:$false
 }
 
-Write-Host "Creating lab $LabName"
-New-LabDefinition -Name $LabName -DefaultVirtualizationEngine HyperV
+Write-Host "Creating lab $($Config.LabName)"
+New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
-Add-LabVirtualNetworkDefinition -Name 'Lab'
+Add-LabVirtualNetworkDefinition -Name $Config.LabName
 Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
 
-# Monitor
-$netAdapter = @()
-$netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch 'Lab'
-$netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp
-Add-LabMachineDefinition -Name $MonitorName -OperatingSystem 'Windows Server 2022 Standard Evaluation (Desktop Experience)' -Memory 4GB -Processors 2 -Roles RootDC,Routing -DomainName $DomainName -NetworkAdapter $netAdapter
+$LabMachines = New-Object System.Collections.Generic.List[System.String]
 
-# Agent 1
-Add-LabMachineDefinition -Name $AgentName -OperatingSystem 'Windows 11 Pro' -Memory 2GB -IsDomainJoined -DomainName $DomainName -Network 'Lab'
+$RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $Config.LabName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
 
-# Agent 2
-Add-LabMachineDefinition -Name $Agent2Name -OperatingSystem 'Windows 10 Pro' -Memory 2GB -IsDomainJoined -DomainName $DomainName -Network 'Lab'
+# Domain Controllers
+foreach($DC in $Config.DomainControllers) {
+    $Roles = New-Object System.Collections.Generic.List[System.String]
+    if($DC.RootDC) { $Roles.Add('RootDC') } else { $Roles.Add('DC') }
+    if($DC.Routing) { $Roles.Add('Routing') }
+    if($DC.Routing) {
+        $LabMachines.Add($DC.Name)
+        Add-LabMachineDefinition -Name $DC.Name -OperatingSystem $DC.OS -Memory $DC.RAM -Processors $DC.CPU -Roles $Roles -DomainName $DC.DomainName -NetworkAdapter $RoutingAdapters
+        $LabMachines.Add($DC.Name)
+    } else {
+        Add-LabMachineDefinition -Name $DC.Name -OperatingSystem $DC.OS -Memory $DC.RAM -Processors $DC.CPU -Roles $Roles -DomainName $DC.DomainName -Network $Config.LabName
+        $LabMachines.Add($DC.Name)
+    }
+}
 
-# Scoutbees 1
-Add-LabMachineDefinition -Name $HiveName -OperatingSystem 'Windows 11 Pro' -Memory 2GB -IsDomainJoined -DomainName $DomainName -Network 'Lab'
+# Monitors
+foreach($Monitor in $Config.Monitors) {
+    if($Monitor.Name -in $LabMachines) { Continue }
+    Add-LabMachineDefinition -Name $Monitor.Name -OperatingSystem $Monitor.OS -Memory $Monitor.RAM -Processors $Monitor.CPU -DomainName $Monitor.DomainName -Network $Config.LabName
+    $LabMachines.Add($Monitor.Name)
+}
 
-# EdgeDX 1
-Add-LabMachineDefinition -Name $EdgeDXName -OperatingSystem 'Windows 11 Pro' -Memory 2GB -IsDomainJoined -DomainName $DomainName -Network 'Lab'
+ # EdgeDX - Windows
+foreach($Agent in $Config.EdgeDX) {
+    if($Agent.Name -in $LabMachines) { Continue }
+    Add-LabMachineDefinition -Name $Agent.Name -OperatingSystem $Agent.OS -Memory $Agent.RAM -Processors $Agent.CPU -DomainName $Agent.DomainName -Network $Config.LabName
+    $LabMachines.Add($Agent.Name)
+}
 
-# EdgeDX 2
-Add-LabMachineDefinition -Name $Edge2DXName -OperatingSystem 'Windows 10 Pro' -Memory 2GB -IsDomainJoined -DomainName $DomainName -Network 'Lab'
+# Hives
+foreach($Hive in $Config.Hives) {
+    if($Hive.Name -in $LabMachines) { Continue }
+    Add-LabMachineDefinition -Name $Hive.Name -OperatingSystem $Hive.OS -Memory $Hive.RAM -Processors $Hive.CPU -DomainName $Hive.DomainName -Network $Config.LabName
+    $LabMachines.Add($Hive.Name)
+}
+
+# RT Devices
+foreach($RTDevice in $Config.RTDevices) {
+    if($RTDevice.Name -in $LabMachines) { Continue }
+    Add-LabMachineDefinition -Name $RTDevice.Name -OperatingSystem $RTDevice.OS -Memory $RTDevice.RAM -Processors $RTDevice.CPU -DomainName $RTDevice.DomainName -Network $Config.LabName
+    $LabMachines.Add($RTDevice.Name)
+}
+
 
 Install-Lab
 
 Send-ALNotification -Activity 'Base Install' -Message "Installing ControlUp Configuration" -Provider 'Toast'
 
 # Seems to only work with Invoke-LabCommand if the script is ran by through psexec.
-Copy-LabFileItem -Path $LabSources\Tools\SysInternals\psexec.exe -ComputerName $RTDevices -DestinationFolderPath "C:\"
-Copy-LabFileItem -Path .\scripts -ComputerName $RTDevices -DestinationFolderPath "C:\"
-Copy-LabFileItem -Path $LabSources\SoftwarePackages\ControlUpConsole.exe -DestinationFolderPath "C:\users\public\desktop\" -ComputerName $RTDevices
+Copy-LabFileItem -Path $LabSources\Tools\SysInternals\psexec.exe -ComputerName $Config.RTDevices.Name-DestinationFolderPath "C:\"
+Copy-LabFileItem -Path .\scripts -ComputerName $Config.RTDevices.Name -DestinationFolderPath "C:\"
+Copy-LabFileItem -Path $LabSources\SoftwarePackages\ControlUpConsole.exe -DestinationFolderPath "C:\users\public\desktop\" -ComputerName $Config.Monitors.Name
 
+# Install Monitor Service
 Install-Module -Name ControlUp.Automation -SkipPublisherCheck -Scope AllUsers -Verbose
-Send-ModuleToPSSession -Module (Get-Module -Name ControlUp.Automation -ListAvailable) -Session (New-LabPSSession -ComputerName $MonitorName)
-
-# Install Service
-Invoke-LabCommand -ComputerName $MonitorName -Variable @((Get-Variable -Name DEXAPIKey), (Get-Variable -Name MonitorName), (Get-Variable -Name DomainName)) -ActivityName 'ControlUp Monitor Service' -ScriptBlock {
-    Start-Process -FilePath "C:\psexec.exe" -ArgumentList "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Monitor.ps1 -DEXAPIKey $DEXAPIKey -MonitorName $MonitorName -DomainName $DomainName" -Wait -RedirectStandardOutput 'C:\scripts\psexec-standard-setup-monitor.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-monitor.log'
-} 
+foreach($Monitor in $Config.Monitors) {
+    Send-ModuleToPSSession -Module (Get-Module -Name ControlUp.Automation -ListAvailable) -Session (New-LabPSSession -ComputerName $Monitor.Name)
+    Invoke-LabCommand -ComputerName $Monitor.Name -Variable @((Get-Variable -Name Monitor), (Get-Variable -Name Config)) -ActivityName 'ControlUp Monitor Service' -ScriptBlock {
+        Start-Process -FilePath "C:\psexec.exe" -ArgumentList "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Monitor.ps1 -DEXAPIKey $($Config.DEXKey) -MonitorName $($Monitor.Name) -DomainName $($Monitor.DomainName)" -Wait -RedirectStandardOutput 'C:\scripts\psexec-standard-setup-monitor.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-monitor.log'
+    } 
+}
 
 # Setup Tree
-Invoke-LabCommand -ComputerName $MonitorName -ActivityName 'Moving ControlUp Monitor Object' -ScriptBlock {
-    Start-Process -FilePath "C:\psexec.exe" -ArgumentList "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1 -LabName $LabName -OrgName $OrgName" -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
-} -Variable (Get-Variable -Name LabName), (Get-Variable -Name OrgName)
+Invoke-LabCommand -ComputerName $Config.Monitors[0].Name -ActivityName 'Moving ControlUp Monitor Object' -ScriptBlock {
+    Start-Process -FilePath "C:\psexec.exe" -ArgumentList "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1 -LabName $($Config.LabName) -OrgName $($Config.OrgName)" -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
+} -Variable (Get-Variable -Name Config)
 
 # Install Agent Service
-foreach($Agent in $RTDevices) {
-    if($Agent -eq $MonitorName) { Continue }
+foreach($Agent in $Config.RTDevices.Name) {
+    if($Agent -in $Config.Monitors.Name) { Continue }
     Send-ModuleToPSSession -Module (Get-Module -Name ControlUp.Automation -ListAvailable) -Session (New-LabPSSession -ComputerName $Agent)
-    $Params = "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Install-Agent.ps1 -Token $DEXAPIKey -FolderPath $OrgName\$LabName\Agents -Site Default"
+    $Params = "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Install-Agent.ps1 -Token $($Config.DEXKey) -FolderPath $($Config.OrgName)\$($Config.LabName)\Agents -Site Default"
     Invoke-LabCommand -ComputerName $Agent -ActivityName 'Installing CUAgent' -ScriptBlock {
         Start-Process -FilePath "C:\psexec.exe" -ArgumentList $Params -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
     } -Variable (Get-Variable -Name Params)
@@ -104,10 +112,10 @@ foreach($Agent in $RTDevices) {
 
 # Install Hive
 # Once we can silenty install with a key, we can add scouts automatically.
-Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\hive110_1223x64.exe -ComputerName $Hives -CommandLine '/VERYSILENT /SUPPRESSMSGBOXES' 
+Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\hive110_1223x64.exe -ComputerName $($Config.Hives.Name) -CommandLine '/VERYSILENT /SUPPRESSMSGBOXES' 
 
 # Install EdgeDX
 $Params = "/qn DEVREGCODE=$DEVREGCODE TENANT=$TENANT ALLUSERS=1"
-Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $EdgeDXDevices -CommandLine $Params
+Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $Config.EdgeDX.Name -CommandLine $Params
 
 Read-Host "Press any key once the hives have their key installed."
