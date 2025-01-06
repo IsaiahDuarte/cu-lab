@@ -160,8 +160,8 @@ Once the script is done, you should have entries in your host file for the new V
 
 ![DeployedLab](images/DeployedLab.png)
 
-To add the host and hyperv connection:
-1. Add the host ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
+**To add the host and hyperv connection**:
+1. Add the lab adapter ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
 2. Manually install the CUAgent and set the inbound registry key `Set-ItemProperty -Path "HKLM:\SOFTWARE\Smart-X\ControlUp\Agent\Communication" -Name "Outbound" -Value 0`
 3. Restart the Agent
 4. Launch the console on the monitor
@@ -171,6 +171,9 @@ To add the host and hyperv connection:
 ![Hypervisor](images/hypervisor.png)
 
 For more information, see the [AutomatedLab documentation](https://automatedlab.org/).
+
+**Scoutbees**:
+This only installs Scoutbees, you will need to add the hive key manually.
 
 ### Upcoming
 - Multi-Domain support
