@@ -126,7 +126,7 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
 - **Hive**: If true, installs the Scoutbees Custom Hive software.
 - **Monitor**: If true, installs ControlUp Monitor using ControlUp.Automation.
 
-### Domain Properties -.
+### Domain Properties:
 - **Name**: Name of the new domain
 - **Username**: Specifies the username of the domain admin
 - **Password**: Specifies the password of the domain admin
