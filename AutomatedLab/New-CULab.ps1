@@ -162,6 +162,11 @@ try {
     Write-Host "Installing Lab $($Config.LabName)"
     Install-Lab
 
+    # Restart all machines
+    foreach($VM in $Config.VirtualMachines) {
+        Restart-LabVM -ComputerName $VM.Name -Wait
+    }
+
     # Seems to only work with Invoke-LabCommand if the script is ran by through psexec.
     if($Config.GetRTDX().Count -gt 0) {
         Copy-LabFileItem -Path $LabSources\Tools\SysInternals\psexec.exe -ComputerName $Config.GetRTDX().Name -DestinationFolderPath "C:\"
