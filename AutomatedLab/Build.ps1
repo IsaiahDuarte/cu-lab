@@ -14,7 +14,6 @@ class VirtualMachine {
 
 class CUConfig {
     [string] $LabName
-    [string] $DomainName
     [string] $OrgName
     [string] $DriveLetter
     [string] $DEXKey
@@ -55,7 +54,6 @@ class CUConfig {
 $jsonObj = Get-Content -Path $configPath | ConvertFrom-Json
 $Config = [CUConfig]::new()
 $Config.LabName = $jsonObj.LabName
-$Config.DomainName = $jsonObj.DomainName
 $Config.OrgName = $jsonObj.OrgName
 $Config.DriveLetter = $jsonObj.DriveLetter
 $Config.DEXKey = $jsonObj.DEXKey
@@ -67,7 +65,6 @@ $Config.VirtualMachines = foreach ($vm in $jsonObj.VirtualMachines) {
     $obj.OS = $vm.OS
     $obj.RAM = $vm.RAM
     $obj.CPU = $vm.CPU
-    $obj.DomainName = $vm.DomainName
     $obj.Roles = $vm.Roles
     $obj.RTDX = $vm.RTDX
     $obj.EdgeDX = $vm.EdgeDX

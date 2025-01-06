@@ -2,7 +2,6 @@
 {
     "Description": "This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)",
     "LabName": "MacroPlusCULab",
-    "DomainName": "macroplus.internal",
     "OrgName": "",
     "DriveLetter": "C",
     "DEXKey": "",

@@ -2,7 +2,6 @@
 {
     "Description": "This is an example configuration file for a lab with 1 DC server, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server",
     "LabName": "MacroCULab",
-    "DomainName": "macroculab.internal",
     "OrgName": "",
     "DriveLetter": "C",
     "DEXKey": "",

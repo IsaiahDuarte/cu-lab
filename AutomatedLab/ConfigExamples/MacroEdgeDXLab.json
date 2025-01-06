@@ -1,7 +1,6 @@
 {
     "Description": "This is an example configuration file for a scoutbees server",
     "LabName": "MacroEdgeDXLab",
-    "DomainName": null,
     "OrgName": null,
     "DriveLetter": "C",
     "DEXKey": "",

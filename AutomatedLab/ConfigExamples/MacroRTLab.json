@@ -1,7 +1,6 @@
 {
     "Description": "This is an example configuration file for a lab with 1 DC server, 1 monitor on the same Server",
     "LabName": "MacroRTLab",
-    "DomainName": "macrortlab.internal",
     "OrgName": "",
     "DriveLetter": "C",
     "DEXKey": "",
