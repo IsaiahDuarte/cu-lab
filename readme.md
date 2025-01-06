@@ -158,7 +158,7 @@ To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX
 
 Once the script is done, you should have entries in your host file for the new VMs. So you can RDP into them or open Hyper-V Manager and connect to them that way.
 
-![DeployedLab](DeployedLab.png)
+![DeployedLab](images/DeployedLab.png)
 
 To add the host and hyperv connection:
 1. Add the host ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
