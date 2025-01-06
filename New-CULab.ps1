@@ -3,6 +3,7 @@ param(
     [ValidateScript({ Test-Path $_ -PathType Leaf })]
     [string] $ConfigPath
 )
+
 class Domain {
     [string] $Name
     [string] $Username

@@ -158,6 +158,18 @@ To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX
 
 Once the script is done, you should have entries in your host file for the new VMs. So you can RDP into them or open Hyper-V Manager and connect to them that way.
 
+![DeployedLab]](DeployedLab.png)
+
+To add the host and hyperv connection:
+1. Add the host ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
+2. Manually install the CUAgent and set the inbound registry key `Set-ItemProperty -Path "HKLM:\SOFTWARE\Smart-X\ControlUp\Agent\Communication" -Name "Outbound" -Value 0`
+3. Restart the Agent
+4. Launch the console on the monitor
+5. Add the host by name to the org tree
+6. Check the monitor data sources for the connection. Should be available in DEX
+
+![Hypervisor](images/hypervisor.png)
+
 For more information, see the [AutomatedLab documentation](https://automatedlab.org/).
 
 ### Upcoming
@@ -167,6 +179,7 @@ For more information, see the [AutomatedLab documentation](https://automatedlab.
 
 ### References
 
+- [Learn about Controlup](https://www.controlup.com/)
 - [AutomatedLab Documentation](https://automatedlab.org/)
 - [ControlUp Console Download](https://www.controlup.com/download-center/)
 - [EdgeDX Agent Installation](https://support.controlup.com/docs/edge-dx-agent-installation)
