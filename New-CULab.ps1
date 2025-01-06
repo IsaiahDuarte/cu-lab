@@ -8,7 +8,6 @@ class Domain {
     [string] $Username
     [string] $Password
     [string] $UnattendedPassword
-    [string] $DSRMPassword
 }
 
 class VirtualMachine {
@@ -89,7 +88,6 @@ class CUConfig {
             $obj.Name = $domain.Name
             $obj.Username = $domain.Username
             $obj.Password = $domain.Password
-            $obj.DSRMPassword = $domain.DSRMPassword
         }
     }
 }
@@ -140,19 +138,20 @@ try {
     Write-Host "Creating lab $($Config.LabName)"
     New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
-    # Use the default switch and a new adapter for routing
-    Add-LabVirtualNetworkDefinition -Name $Config.LabName
-    Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
-    $RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $Config.LabName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
-
     foreach($domain in $Config.Domains) {
         Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
         Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
     }
 
+    # Use the default switch and a new adapter for routing
+    Add-LabVirtualNetworkDefinition -Name $Config.LabName
+    Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
+    $RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $Config.LabName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
+    
     $LabMachines = New-Object System.Collections.Generic.List[VirtualMachine]
     foreach($vm in $Config.VirtualMachines) {
         try{
+            $domain = $Config.Domains | Where-Object {$_.name -eq $vm.DomainName}
             $splat = @{
                 Name = $vm.Name
                 OperatingSystem = $vm.OS
@@ -160,9 +159,12 @@ try {
                 Processors = $vm.CPU
                 DomainName = $vm.DomainName
                 Roles = $vm.Roles
+                AutoLogonUserName = $domain.Username
+                AutoLogonPassword = $domain.Password
                 Network = $null
                 NetworkAdapter = $null
             }
+            
             if($vm.Roles -contains 'Routing') {
                 $splat.NetworkAdapter = $RoutingAdapters
                 $Splat.Remove('Network')
@@ -182,17 +184,13 @@ try {
     Write-Host "Installing Lab $($Config.LabName)"
     Install-Lab
 
-    # Restart all machines
-    foreach($VM in $Config.VirtualMachines) {
-        Restart-LabVM -ComputerName $VM.Name -Wait
-    }
-
-    # Seems to only work with Invoke-LabCommand if the script is ran by through psexec.
+    # ControlUp modules seem to only work with Invoke-LabCommand if the script is ran by through psexec.
     if($Config.GetRTDX().Count -gt 0) {
         Copy-LabFileItem -Path $LabSources\Tools\SysInternals\psexec.exe -ComputerName $Config.GetRTDX().Name -DestinationFolderPath "C:\"
+        Copy-LabFileItem -Path .\scripts -ComputerName $Config.GetRTDX().Name -DestinationFolderPath "C:\"
     } 
+
     if($Config.GetMonitors().Count -gt 0) {
-        Copy-LabFileItem -Path .\scripts -ComputerName $Config.GetMonitors().Name -DestinationFolderPath "C:\"
         Copy-LabFileItem -Path $LabSources\SoftwarePackages\ControlUpConsole.exe -DestinationFolderPath "C:\users\public\desktop\" -ComputerName $Config.GetMonitors().Name
     }
 
@@ -230,6 +228,7 @@ try {
     Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $Config.GetEdgeDX().Name -CommandLine $Params
 
     Send-ALNotification -Activity 'ControlUp Configuration Complete' -Message "Installed configuration" -Provider 'Toast'
+    Show-LabDeploymentSummary -Detailed
 } catch {
     Write-Host "Error: $($_.Exception.Message)"
 } finally {

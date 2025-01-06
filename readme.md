@@ -36,8 +36,7 @@ This is an example configuration file for a lab with 1 Server (Monitor) and 1 Cl
         {
             "Name": "macroplus.internal",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!",
-            "DSRMPassword": "MyOtherSecurePassword123!"
+            "Password": "MySecurePassword123!"
         }
     ],
     "VirtualMachines": [
@@ -82,8 +81,7 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
         {
             "Name": "macroculab.internal",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!",
-            "DSRMPassword": "MyOtherOtherSecurePassword123!"
+            "Password": "MySecurePassword123!"
         }
     ],
     "VirtualMachines": [
@@ -130,7 +128,6 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
 - **Name**: Name of the new domain
 - **Username**: Specifies the username of the domain admin
 - **Password**: Specifies the password of the domain admin
-- **DSRMPassword**: Specifies the DSRM password of the new domain
 
 **Note:** The script assumes a routing role is included in the configuration.
 **Note:** The RootDC VM has to be at the start of the VM array

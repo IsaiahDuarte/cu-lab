@@ -11,8 +11,7 @@
         {
             "Name": "macroculab.internal",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!",
-            "DSRMPassword": "MyOtherOtherSecurePassword123!"
+            "Password": "MySecurePassword123!"
         }
     ],
     "VirtualMachines": [
