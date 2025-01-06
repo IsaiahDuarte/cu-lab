@@ -7,6 +7,14 @@
     "DEXKey": "",
     "DEVREGCODE": null,
     "TENANT": null,
+    "Domains": [
+        {
+            "Name": "macrolab.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "DSRMPassword": "MyOtherOtherSecurePassword123!"
+        }
+    ],
     "VirtualMachines": [
         {
             "Name": "monitor",

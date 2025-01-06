@@ -6,6 +6,14 @@
     "DEXKey": "",
     "DEVREGCODE": null,
     "TENANT": null,
+    "Domains": [
+        {
+            "Name": "macrortlab.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "DSRMPassword": "MyOtherOtherSecurePassword123!"
+        }
+    ],
     "VirtualMachines": [
         {
             "Name": "dc-1",

@@ -6,6 +6,7 @@
     "DEXKey": "",
     "DEVREGCODE": null,
     "TENANT": null,
+    "Domains": [ ],
     "VirtualMachines": [
         {
             "Name": "sb-1",
