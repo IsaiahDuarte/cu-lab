@@ -1,9 +1,12 @@
 # cu-lab
 
 ### Summary
+**This is not done yet.**
+
 This repository leverages [AutomatedLab](https://github.com/AutomatedLab/AutomatedLab) to easily configure a ControlUp environment on Hyper-V. The lab structure is defined via a JSON configuration file.
 
 For quick setup, please refer to the [Quick Start](#quick-start) section.
+
 
 ### Requirements
 To set up a full CU Lab, you will need the following:
