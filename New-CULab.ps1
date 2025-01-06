@@ -117,7 +117,7 @@ try {
     Import-Module AutomatedLab
 
     Write-Host "Checking if Lab Sources are configured"
-    if((Get-LabSourcesLocation -Local) -notcontains "$($Config.DriveLetter):\*") {
+    if((Get-LabSourcesLocation -Local) -notcontains "$($Config.DriveLetter):\LabSources") {
         New-LabSourcesFolder -DriveLetter $Config.DriveLetter -Force
         $folder = "$($Config.DriveLetter):\LabSources"
         Write-Host "Please copy the following to $folder and press enter to continue"

@@ -21,7 +21,8 @@ To set up a full CU Lab, you will need the following:
 ### JSON Configuration
 `New-CULab.ps1` dynamically adds machines to your lab based on the provided JSON configuration file.
 
-Example configuration:
+Example configurations:
+This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)
 ```json
 {
     "Description": "This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)",
@@ -67,6 +68,40 @@ Example configuration:
     ]
 }
 ```
+This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server
+```json
+{
+    "Description": "This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server",
+    "LabName": "MacroCULab",
+    "OrgName": "",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "Domains": [
+        {
+            "Name": "macroculab.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "DSRMPassword": "MyOtherOtherSecurePassword123!"
+        }
+    ],
+    "VirtualMachines": [
+        {
+            "Name": "monitor",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "2",
+            "DomainName": "macroculab.internal",
+            "Roles": [ "RootDC", "Routing" ],
+            "RTDX": true,
+            "EdgeDX": true,
+            "Hive": true,
+            "Monitor": true
+        }
+    ]
+}
+```
 
 ### Root Properties:
 - **Description**: Optional but provides a brief description of the lab.
@@ -76,6 +111,7 @@ Example configuration:
 - **DEXKey**: See [Create and Manage API Keys](https://api.controlup.io/reference/how-to-create-api-keys).
 - **DEVREGCODE**: See [EdgeDX Agent](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
 - **TENANT**: See [EdgeDX Agent](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
+- **Domains**: Array of domains in the lab
 - **VirtualMachines**: Array of virtual machines to be created.
 
 ### Virtual Machines Properties:
@@ -90,8 +126,15 @@ Example configuration:
 - **Hive**: If true, installs the Scoutbees Custom Hive software.
 - **Monitor**: If true, installs ControlUp Monitor using ControlUp.Automation.
 
+### Domain Properties -.
+- **Name**: Name of the new domain
+- **Username**: Specifies the username of the domain admin
+- **Password**: Specifies the password of the domain admin
+- **DSRMPassword**: Specifies the DSRM password of the new domain
+
 **Note:** The script assumes a routing role is included in the configuration.
-**Note:** THe RootDC VM has to be at the start of the VM array
+**Note:** The RootDC VM has to be at the start of the VM array
+**Note:** Currently only one domain is supported.
 
 More examples can be found in [ConfigExamples](ConfigExamples)
 
