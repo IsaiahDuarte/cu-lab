@@ -1,7 +1,7 @@
 param(
-    [string]$DEXAPIKey,
-    [string]$MonitorName,
-    [string]$DomainName
+    [string] $DEXAPIKey,
+    [string] $MonitorName,
+    [string] $DomainName
 )
 Start-Transcript -Path C:\scripts\AutomatedLab-Setup-Monitor.log -Append
 Write-Host "Importing Module"

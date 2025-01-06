@@ -1,7 +1,7 @@
 param(
-    [string]$LabName,
-    [string]$OrgName,
-    [string]$Monitors
+    [string] $LabName,
+    [string] $OrgName,
+    [string] $Monitors
 )
 Start-Transcript -Path C:\scripts\AutomatedLab-Setup-Tree.log -Append
 $pathToUserModule = (Get-ChildItem "C:\Program Files\Smart-X\ControlUpMonitor\*ControlUp.PowerShell.User.dll" -Recurse | Sort-Object LastWriteTime -Descending)[0]

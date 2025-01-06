@@ -84,14 +84,14 @@ Example configuration:
 
 **Note:** The script assumes a routing role is included in the configuration.
 
-More examples can be found in [ConfigExamples](AutomatedLab/ConfigExamples)
+More examples can be found in [ConfigExamples](ConfigExamples)
 
 ### Quick Start
 
 To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX, Scoutbees, and Active Directory, follow these steps:
 
 1. Download the repository.
-2. Copy `./AutomatedLab/ConfigExamples/MacroPlusCULab.json` to `./AutomatedLab`.
+2. Copy `./ConfigExamples/MacroPlusCULab.json` to the root of the repo.
 3. Update the JSON file:
    - Set values for `DEXKey`, `DEVREGCODE`, `TENANT`.
    - Replace the `DomainName` for each VM with your desired domain name.
@@ -103,7 +103,7 @@ To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX
 8. Download the EdgeDX Agent Manager MSI from your [tenant](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
 9. Download the Scoutbees Custom Hive from your [ControlUp dashboard](https://support.controlup.com/docs/installing-custom-hives#install-a-custom-hive).
 10. Open an elevated PowerShell window, navigate to the repository folder, and run:  
-    `. ./AutomatedLab/New-CULab.ps1 -ConfigPath ./MacroPlusCULab.json`
+    `. ./New-CULab.ps1 -ConfigPath ./MacroPlusCULab.json`
 
 **Note:** The setup may take up to an hour depending on your device. It will be faster for new labs since the OS images are built.
 
