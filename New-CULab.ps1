@@ -7,7 +7,6 @@ class Domain {
     [string] $Name
     [string] $Username
     [string] $Password
-    [string] $UnattendedPassword
 }
 
 class VirtualMachine {
@@ -88,6 +87,7 @@ class CUConfig {
             $obj.Name = $domain.Name
             $obj.Username = $domain.Username
             $obj.Password = $domain.Password
+            $obj
         }
     }
 }
@@ -118,12 +118,13 @@ try {
     if((Get-LabSourcesLocation -Local) -notcontains "$($Config.DriveLetter):\LabSources") {
         New-LabSourcesFolder -DriveLetter $Config.DriveLetter -Force
         $folder = "$($Config.DriveLetter):\LabSources"
-        Write-Host "Please copy the following to $folder and press enter to continue"
-        Write-Host "Download Windows Server 2022 and place ISO here - $folder\ISOs"
-        Write-Host "Download Windows 11 ISO and place here - $folder\ISOs"
-        Write-Host "Download ControlUp Console and place here - $folder\SoftwarePackages"
-        Write-Host "Download Hive and place here - $folder\SoftwarePackages"
-        Write-Host "Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
+        Clear-Host
+        Write-Host -ForegroundColor 'White' "Please copy the following to $folder and press enter to continue"
+        Write-Host -ForegroundColor 'Yellow' "Download Windows Server 2022 and place ISO here - $folder\ISOs"
+        Write-Host -ForegroundColor 'Yellow' "Download Windows 11 ISO and place here - $folder\ISOs"
+        Write-Host -ForegroundColor 'Yellow' "Download ControlUp Console and place here - $folder\SoftwarePackages"
+        Write-Host -ForegroundColor 'Yellow' "Download Hive and place here - $folder\SoftwarePackages"
+        Write-Host -ForegroundColor 'Yellow'"Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
         Read-Host
     }
     $LabLocation = Get-LabSourcesLocation -Local | Where-Object { $_ -like "$($Config.DriveLetter):\*" }

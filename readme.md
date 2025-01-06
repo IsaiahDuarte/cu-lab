@@ -162,6 +162,8 @@ For more information, see the [AutomatedLab documentation](https://automatedlab.
 
 ### Upcoming
 - Multi-Domain support
+- Versioning for CU Products
+- Validation of the Config file
 
 ### References
 
