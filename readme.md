@@ -31,13 +31,21 @@ Example configuration:
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
+    "Domains": [
+        {
+            "Name": "macroplus.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "DSRMPassword": "MyOtherSecurePassword123!"
+        }
+    ],
     "VirtualMachines": [
         {
-            "Name": "mp2-monitor-1",
+            "Name": "monitor-1",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "4294967296",
             "CPU": "1",
-            "DomainName": "mp2.internal",
+            "DomainName": "macroplus.internal",
             "Roles": ["RootDC", "Routing"],
             "RTDX": true,
             "EdgeDX": false,
@@ -45,11 +53,11 @@ Example configuration:
             "Monitor": true
         },
         {
-            "Name": "mp2-win11-1",
+            "Name": "win11-1",
             "OS": "Windows 11 Pro",
             "RAM": "2147483648",
             "CPU": "1",
-            "DomainName": "mp2.internal",
+            "DomainName": "macroplus.internal",
             "Roles": [],
             "RTDX": true,
             "EdgeDX": true,
@@ -83,6 +91,7 @@ Example configuration:
 - **Monitor**: If true, installs ControlUp Monitor using ControlUp.Automation.
 
 **Note:** The script assumes a routing role is included in the configuration.
+**Note:** THe RootDC VM has to be at the start of the VM array
 
 More examples can be found in [ConfigExamples](ConfigExamples)
 
@@ -107,7 +116,12 @@ To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX
 
 **Note:** The setup may take up to an hour depending on your device. It will be faster for new labs since the OS images are built.
 
+Once the script is done, you should have entries in your host file for the new VMs. So you can RDP into them or open Hyper-V Manager and connect to them that way.
+
 For more information, see the [AutomatedLab documentation](https://automatedlab.org/).
+
+### Upcoming
+- Multi-Domain support
 
 ### References
 

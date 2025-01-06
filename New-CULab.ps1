@@ -1,8 +1,15 @@
 param(
-    [Paramter(Mandatory = $true)]
+    [Parameter(Mandatory = $true)]
     [ValidateScript({ Test-Path $_ -PathType Leaf })]
     [string] $ConfigPath
 )
+class Domain {
+    [string] $Name
+    [string] $Username
+    [string] $Password
+    [string] $UnattendedPassword
+    [string] $DSRMPassword
+}
 
 class VirtualMachine {
     [string] $Name
@@ -25,6 +32,7 @@ class CUConfig {
     [string] $DEVREGCODE
     [string] $TENANT
     [VirtualMachine[]] $VirtualMachines
+    [Domain[]] $Domains
 
     [VirtualMachine[]] GetRTDX() {
         return $this.VirtualMachines | Where-Object { $_.RTDX -eq $true }
@@ -69,14 +77,21 @@ class CUConfig {
             $obj.RAM = $vm.RAM
             $obj.CPU = $vm.CPU
             $obj.Roles = $vm.Roles
+            $obj.DomainName = $vm.DomainName
             $obj.RTDX = $vm.RTDX
             $obj.EdgeDX = $vm.EdgeDX
             $obj.Hive = $vm.Hive
             $obj.Monitor = $vm.Monitor
             $obj
         }
+        $this.Domains = foreach($domain in $jsonObj.Domains) {
+            $obj = [Domain]::New()
+            $obj.Name = $domain.Name
+            $obj.Username = $domain.Username
+            $obj.Password = $domain.Password
+            $obj.DSRMPassword = $domain.DSRMPassword
+        }
     }
-    
 }
 
 try {
@@ -125,12 +140,17 @@ try {
     Write-Host "Creating lab $($Config.LabName)"
     New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
+    # Use the default switch and a new adapter for routing
     Add-LabVirtualNetworkDefinition -Name $Config.LabName
     Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
     $RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $Config.LabName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
 
+    foreach($domain in $Config.Domains) {
+        Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
+        Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
+    }
+
     $LabMachines = New-Object System.Collections.Generic.List[VirtualMachine]
-    Write-Host "Setting up configuration"
     foreach($vm in $Config.VirtualMachines) {
         try{
             $splat = @{
