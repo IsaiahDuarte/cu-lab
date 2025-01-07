@@ -2,10 +2,11 @@
     "Description": "This example splits up each CU Product into its own VM on Windows Server 2022, 10, and 11",
     "LabName": "oliverlab",
     "OrgName": "",
-    "DriveLetter": "E",
+    "DriveLetter": "C",
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
+    "ScoutbeesKey": "",
     "Domains": [
         {
             "Name": "oliverslab.internal",

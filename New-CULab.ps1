@@ -30,6 +30,7 @@ class CUConfig {
     [string] $DEXKey
     [string] $DEVREGCODE
     [string] $TENANT
+    [string] $ScoutbeesKey
     [VirtualMachine[]] $VirtualMachines
     [Domain[]] $Domains
 
@@ -69,6 +70,7 @@ class CUConfig {
         $this.DEXKey = $jsonObj.DEXKey
         $this.DEVREGCODE = $jsonObj.DEVREGCODE
         $this.TENANT = $jsonObj.TENANT
+        $this.ScoutbeesKey = $jsonObj.ScoutbeesKey
         $this.VirtualMachines = foreach ($vm in $jsonObj.VirtualMachines) {
             $obj = [VirtualMachine]::new()
             $obj.Name = $vm.Name
@@ -140,20 +142,22 @@ try {
     Write-Host "Creating lab $($Config.LabName)"
     New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
-    foreach($domain in $Config.Domains) {
-        Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
-        Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
-    }
-
-    # Use the default switch and a new adapter for routing
-    Add-LabVirtualNetworkDefinition -Name $Config.LabName
-    Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
-    $RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $Config.LabName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
-    
     $LabMachines = New-Object System.Collections.Generic.List[VirtualMachine]
-    foreach($vm in $Config.VirtualMachines) {
-        try{
-            $domain = $Config.Domains | Where-Object {$_.name -eq $vm.DomainName}
+    Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
+
+    foreach($domain in $Config.Domains) {
+        Write-Host "Processing $($domain.Name)"
+        Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
+        $domainAdatperName = $Config.LabName + "." + $Domain.Name
+        Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
+
+        # Use the default switch and a new adapter for routing
+        Add-LabVirtualNetworkDefinition -Name $domainAdatperName
+        $RoutingAdapters = @((New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdatperName), (New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp))
+
+        foreach($vm in $Config.VirtualMachines.Where({$_.DomainName -eq $domain.Name})) {
+            if($vm -in $LabMachines) { Continue }
+            Write-Host "Adding $($VM.Name)"
             $splat = @{
                 Name = $vm.Name
                 OperatingSystem = $vm.OS
@@ -171,20 +175,38 @@ try {
                 $splat.NetworkAdapter = $RoutingAdapters
                 $Splat.Remove('Network')
             } else {
-                $splat.Network = $Config.LabName
+                $splat.Network = $domainAdatperName
                 $splat.Remove('NetworkAdapter')
-            }
-        
-            if($vm -in $LabMachines) { Continue }
+            }            
             Add-LabMachineDefinition @splat
             $LabMachines.Add($vm)
-        } catch {
-            Write-Host "Error: $($_.Exception.Message)"
+        }    
+    }
+
+    # Handle Non-Domain
+    foreach($vm in $Config.VirtualMachines.Where({[string]::IsNullOrEmpty($_.DomainName)})) {
+        if($vm -in $LabMachines) { Continue }
+        $splat = @{
+            Name = $vm.Name
+            OperatingSystem = $vm.OS
+            Memory = $vm.RAM
+            Processors = $vm.CPU
+            DomainName = $vm.DomainName
+            Roles = $vm.Roles
+            AutoLogonUserName = $domain.Username
+            AutoLogonPassword = $domain.Password
+            Network = 'Default Switch'
         }
+        Add-LabMachineDefinition @splat
+        $LabMachines.Add($vm)    
     }
 
     Write-Host "Installing Lab $($Config.LabName)"
     Install-Lab
+
+    if($Config.Domains.Count -gt 0) {
+        Set-LabInstallationCredential -Username $Config.Domains[0].Username -Password $Config.Domains[0].Password
+    }
 
     # ControlUp modules seem to only work with Invoke-LabCommand if the script is ran by through psexec.
     if($Config.GetRTDX().Count -gt 0) {
@@ -206,10 +228,30 @@ try {
     }
 
     # Setup Tree
-    $Monitors = $Config.GetMonitors().Name -join ','
+    $FolderList = [Ordered]@{}
+    $FolderList["$($Config.OrgName)\"] = $Config.LabName
+    foreach($Monitor in $Config.GetMonitors()) {
+        $DomainFolder = @{"$($Config.OrgName)\$($Config.DomainName)" = $Monitor.DomainName}
+        $DomainPath = "$($Config.OrgName)\$($Config.LabName)"
+        $AgentFolder = @{$DomainPath="Agent"}
+        $MonitorFolder = @{$DomainPath="Monitor"}
+        if(-not($FolderList.Contains($DomainFolder))){
+            $FolderList[$DomainFolder.GetEnumerator().name] = $DomainFolder[$domainfolder.keys[0]]
+        }
+        if($AgentFolder -notin $FolderList) {
+            $FolderList[$DomainFolder.GetEnumerator().name] = $AgentFolder[$domainfolder.keys[0]]
+        }
+        if($MonitorFolder -notin $FolderList) {
+            $FolderList[$DomainFolder.GetEnumerator().name] = $MonitorFolder[$domainfolder.keys[0]]
+        }
+    }
+
     Invoke-LabCommand -ComputerName $Config.GetMonitors()[0].Name -ActivityName 'Moving ControlUp Monitor Object' -ScriptBlock {
-        Start-Process -FilePath "C:\psexec.exe" -ArgumentList "/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1 -LabName $($Config.LabName) -OrgName $($Config.OrgName) -Monitors $Monitors" -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
-    } -Variable (Get-Variable -Name Config), (Get-Variable -Name Monitors)
+        $json = $StrippedConfig | ConvertTo-Json -Compress -Depth 4
+        $Arguments = ("/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1 -json " + $json)
+        Write-Host $Arguments
+        Start-Process -FilePath "C:\psexec.exe" -ArgumentList $Arguments -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
+    } -Variable (Get-Variable -Name StrippedConfig)
 
     # Install Agent Service
     foreach($Agent in $Config.GetRTDX().Name) {
@@ -222,8 +264,7 @@ try {
     }
 
     # Install Hive
-    # Once we can silenty install with a key, we can add scouts automatically.
-    Install-LabSoftwarePackage -Path (Get-Item -Path "$LabSources\SoftwarePackages\hive*.exe")[0].FullName -ComputerName $Config.GetHives().Name -CommandLine '/VERYSILENT /SUPPRESSMSGBOXES' 
+    Install-LabSoftwarePackage -Path (Get-Item -Path "$LabSources\SoftwarePackages\hive*.exe")[0].FullName -ComputerName $Config.GetHives().Name -CommandLine ('/VERYSILENT /LOG="C:\setup_log_sb.log" /DIR="C:\Program Files\Scoutbees Custom Hive" /name="ScoutbeesCustomHive" /SUPPRESSMSGBOXES ' + '/token="' + $Config.ScoutbeesKey + '"')  
 
     # Install EdgeDX
     $Params = "/qn DEVREGCODE=$($Config.DEVREGCODE) TENANT=$($Config.TENANT) ALLUSERS=1"

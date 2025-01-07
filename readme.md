@@ -35,6 +35,7 @@ This is an example configuration file for a lab with 1 Server (Monitor) and 1 Cl
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
+    "ScoutbeesKey": "",
     "Domains": [
         {
             "Name": "macroplus.internal",
@@ -80,6 +81,7 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
+    "ScoutbeesKey": "",
     "Domains": [
         {
             "Name": "macroculab.internal",
@@ -111,8 +113,9 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
 - **DriveLetter**: Specifies the drive for storing VMs and LabSources folder.
 - **DEXKey**: See [Create and Manage API Keys](https://api.controlup.io/reference/how-to-create-api-keys).
 - **DEVREGCODE**: See [EdgeDX Agent](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
+- **ScoutbeesKey**: See [Silent Install for Synthetic Monitoring Custom Hives](https://support.controlup.com/docs/silent-install-for-synthetic-monitoring-custom-hives).
 - **TENANT**: See [EdgeDX Agent](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
-- **Domains**: Array of domains in the lab
+- **Domains**: Array of domains in the lab.
 - **VirtualMachines**: Array of virtual machines to be created.
 
 ### Virtual Machines Properties:
@@ -182,6 +185,9 @@ This only installs Scoutbees, you will need to add the hive key manually.
 - Multi-Domain support
 - Versioning for CU Products
 - Validation of the Config file
+- RDC generated file
+- Seperate deployment folders for monitors vs agents etc
+- Winget integration
 
 ### References
 

@@ -1,0 +1,72 @@
+{
+    "Description": "Testing multidomain",
+    "LabName": "multidomain",
+    "OrgName": "",
+    "DriveLetter": "C",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "ScoutbeesKey": "",
+    "Domains": [
+        {
+            "Name": "site1.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!"
+        },
+        {
+            "Name": "site2.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!"
+        }
+    ],
+    "VirtualMachines": [
+        {
+            "Name": "site1-dc",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "site1.internal",
+            "Roles": ["RootDC", "Routing"],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "site2-dc",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "site2.internal",
+            "Roles": ["RootDC", "Routing"],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "site1-rt",
+            "OS": "Windows 11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "site1.internal",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "site2-rt",
+            "OS": "Windows 11 Pro",
+            "RAM": "1073741824",
+            "CPU": "1",
+            "DomainName": "site2.internal",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        }
+    ]
+}
