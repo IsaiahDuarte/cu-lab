@@ -1,0 +1,168 @@
+{
+    "Description": "Olivers lab is a large lab with multiple domains and multiple virtual machines",
+    "LabName": "OliversLab",
+    "DriveLetter": "C",
+    "OrgName": "",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "Domains": [
+        {
+            "Name": "oliver.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "NetworkBase": "192.168.103",
+            "Subnet": "192.168.103.0/24",
+            "NatSubnet": "192.168.104.0/24",
+            "NatAddressBase": "192.168.104",
+            "NatIPAddress": "192.168.104.10"
+        },
+        {
+            "Name": "casper.internal",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "Subnet": "192.168.105.0/24",
+            "NatSubnet": "192.168.106.0/24",
+            "NatAddressBase": "192.168.106",
+            "NatIPAddress": "192.168.106.10"
+        }
+    ],
+    "VirtualMachines": [
+        {
+            "Name": "oliver-dc",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4294967296",
+            "CPU": "1",
+            "DomainName": "oliver.internal",
+            "IpAddress": "192.168.103.10",
+            "Roles": [
+                "RootDC",
+                "Routing"
+            ],
+            "RTDX": false,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "casper-dc",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "casper.internal",
+            "IpAddress": "192.168.105.10",
+            "Roles": [
+                "RootDC",
+                "Routing"
+            ],
+            "RTDX": false,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "oliver-monitor",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "2",
+            "DomainName": "oliver.internal",
+            "IpAddress": "192.168.103.11",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "oliver-rt",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "oliver.internal",
+            "IpAddress": "192.168.103.12",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "oliver-edgedx",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "oliver.internal",
+            "IpAddress": "192.168.103.13",
+            "Roles": [],
+            "RTDX": false,
+            "EdgeDX": true,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "oliver-hive",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "oliver.internal",
+            "IpAddress": "192.168.103.14",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "casper-monitor",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "2",
+            "DomainName": "casper.internal",
+            "IpAddress": "192.168.105.11",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        },
+        {
+            "Name": "casper-rt",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "casper.internal",
+            "IpAddress": "192.168.105.12",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "casper-edgedx",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "casper.internal",
+            "IpAddress": "192.168.105.13",
+            "Roles": [],
+            "RTDX": false,
+            "EdgeDX": true,
+            "Hive": false,
+            "Monitor": false
+        },
+        {
+            "Name": "casper-hive",
+            "OS": "Windows 11 Pro",
+            "RAM": "2147483648",
+            "CPU": "1",
+            "DomainName": "casper.internal",
+            "IpAddress": "192.168.105.14",
+            "Roles": [],
+            "RTDX": true,
+            "EdgeDX": false,
+            "Hive": false,
+            "Monitor": true
+        }
+    ]
+}
