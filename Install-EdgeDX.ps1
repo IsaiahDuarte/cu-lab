@@ -16,4 +16,8 @@ function Install-EdgeDX {
     )
 
     Write-Host "Installing EdgeDX"
+
+    # Install EdgeDX
+    $Params = "/qn DEVREGCODE=$($Config.DEVREGCODE) TENANT=$($Config.TENANT) ALLUSERS=1"
+    Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $Config.GetEdgeDX().Name -CommandLine $Params    
 }
