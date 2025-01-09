@@ -38,10 +38,6 @@ function New-CULab {
 
         # Each domain gets its own nat adapter
         Add-LabVirtualNetworkDefinition -Name "$domainAdapterName.nat" -AddressSpace $domain.NatSubnet
-        if(Get-NetIPAddress -IPAddress "$($Domain.NatAddressBase).1" -ErrorAction SilentlyContinue) {
-            Remove-NetIPAddress -IPAddress "$($Domain.NatAddressBase).1" -Confirm:$false
-        }
-
         if(-not (Get-NetNat | Where-Object {$_.name -eq $domainNatAdapterName})) {
             New-NetNat -Name $domainNatAdapterName -InternalIPInterfaceAddressPrefix $domain.NatSubnet
         }
@@ -50,7 +46,7 @@ function New-CULab {
 
         $RoutingAdapters = @(
             (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName),
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -UseDhcp)
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1"))
         )
 
         foreach ($vm in $Config.VirtualMachines | Where-Object { $_.DomainName -eq $domain.Name }) {

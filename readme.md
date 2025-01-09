@@ -158,7 +158,7 @@ To quickly set up a lab with Windows Server 2022, Windows 11 agent, RTDX, EdgeDX
 8. Download the EdgeDX Agent Manager MSI from your [tenant](https://support.controlup.com/docs/edge-dx-agent-installation#download-and-install-the-edge-dx-agent).
 9. Download the Scoutbees Custom Hive from your [ControlUp dashboard](https://support.controlup.com/docs/installing-custom-hives#install-a-custom-hive).
 10. Open an elevated PowerShell window, navigate to the repository folder, and run:  
-    `. ./New-CULab.ps1 -ConfigPath ./MacroPlusCULab.json`
+    `. ./Publish-CULab.ps1 -ConfigPath ./MacroPlusCULab.json`
 
 **Note:** The setup may take up to an hour depending on your device. It will be faster for new labs since the OS images are built.
 
@@ -182,9 +182,7 @@ For more information, see the [AutomatedLab documentation](https://automatedlab.
 This only installs Scoutbees, you will need to add the hive key manually.
 
 ### Upcoming
-- Multi-Domain support
 - Versioning for CU Products
-- Validation of the Config file
 - RDC generated file
 - Seperate deployment folders for monitors vs agents etc
 - Winget integration
