@@ -32,21 +32,23 @@ function New-CULab {
         
         $domainAdapterName = "$($Config.LabName).$($domain.Name)"
         $domainNatAdapterName = "$($Config.LabName).$($domain.Name).nat"
-        Add-LabVirtualNetworkDefinition -Name $domainAdapterName -AddressSpace $domain.Subnet
 
         Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
 
         # Each domain gets its own nat adapter
-        Add-LabVirtualNetworkDefinition -Name "$domainAdapterName.nat" -AddressSpace $domain.NatSubnet
-        if(-not (Get-NetNat | Where-Object {$_.name -eq $domainNatAdapterName})) {
-            New-NetNat -Name $domainNatAdapterName -InternalIPInterfaceAddressPrefix $domain.NatSubnet
-        }
+        Add-LabVirtualNetworkDefinition -Name $domainNatAdapterName -AddressSpace $domain.NatSubnet
+        Get-NetNat | Where-Object {$_.name -eq $domainNatAdapterName} | Remove-NetNat -Confirm:$false
+        New-NetNat -Name $domainNatAdapterName -InternalIPInterfaceAddressPrefix $domain.NatSubnet
         
-        # $RouterVM = $Config.GetRouting() | Where-Object {$_.DomainName -eq $domain.Name}
+        # Each domain gets its own internal adapter
+        Add-LabVirtualNetworkDefinition -Name $domainAdapterName -AddressSpace $domain.Subnet
+
+        $RouterVM = $Config.GetRouting() | Where-Object {$_.DomainName -eq $domain.Name}
+        $RootDC = $Config.GetRootDomainControllers() | Where-Object {$_.DomainName -eq $domain.Name}
 
         $RoutingAdapters = @(
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName),
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1"))
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName -Ipv4Address $RouterVM.IpAddress),
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1") -Ipv4DNSServers $RootDC.IpAddress)# => Manually doing this for now. #-AccessVLANID $domain.HyperVAccessVLANID)
         )
 
         foreach ($vm in $Config.VirtualMachines | Where-Object { $_.DomainName -eq $domain.Name }) {
@@ -64,12 +66,16 @@ function New-CULab {
                 Network             = $domainAdapterName
                 IpAddress           = $vm.IpAddress
                 NetworkAdapter      = $null
+                Gateway             = $RouterVM.IpAddress
+                DnsServer1           = $RootDC.IpAddress
             }
 
             if($vm.Roles -contains 'Routing') {
                 $splat.NetworkAdapter = $RoutingAdapters
                 $Splat.Remove("Network")
                 $Splat.Remove("IpAddress")
+                $Splat.Remove("Gateway")
+                $Splat.Remove("DnsServer1")
             } else {
                 $Splat.Remove("NetworkAdapter")
             }

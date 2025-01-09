@@ -15,7 +15,8 @@
             "Subnet": "192.168.103.0/24",
             "NatSubnet": "192.168.104.0/24",
             "NatAddressBase": "192.168.104",
-            "NatIPAddress": "192.168.104.10"
+            "NatIPAddress": "192.168.104.10",
+            "HyperVAccessVLANID": 103
         },
         {
             "Name": "casper.internal",
@@ -24,7 +25,8 @@
             "Subnet": "192.168.105.0/24",
             "NatSubnet": "192.168.106.0/24",
             "NatAddressBase": "192.168.106",
-            "NatIPAddress": "192.168.106.10"
+            "NatIPAddress": "192.168.106.10",
+            "HyperVAccessVLANID": 105
         }
     ],
     "VirtualMachines": [
@@ -35,10 +37,7 @@
             "CPU": "1",
             "DomainName": "oliver.internal",
             "IpAddress": "192.168.103.10",
-            "Roles": [
-                "RootDC",
-                "Routing"
-            ],
+            "Roles": [ "RootDC" ],
             "RTDX": false,
             "EdgeDX": false,
             "Hive": false,
@@ -51,10 +50,7 @@
             "CPU": "1",
             "DomainName": "casper.internal",
             "IpAddress": "192.168.105.10",
-            "Roles": [
-                "RootDC",
-                "Routing"
-            ],
+            "Roles": [ "RootDC" ],
             "RTDX": false,
             "EdgeDX": false,
             "Hive": false,
@@ -62,12 +58,12 @@
         },
         {
             "Name": "oliver-monitor",
-            "OS": "Windows 11 Pro",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "5368709120",
             "CPU": "2",
             "DomainName": "oliver.internal",
             "IpAddress": "192.168.103.11",
-            "Roles": [],
+            "Roles": [ "Routing" ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
@@ -80,7 +76,7 @@
             "CPU": "1",
             "DomainName": "oliver.internal",
             "IpAddress": "192.168.103.12",
-            "Roles": [],
+            "Roles": [ ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
@@ -114,12 +110,12 @@
         },
         {
             "Name": "casper-monitor",
-            "OS": "Windows 11 Pro",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "5368709120",
             "CPU": "2",
             "DomainName": "casper.internal",
             "IpAddress": "192.168.105.11",
-            "Roles": [],
+            "Roles": [ "Routing" ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,

@@ -7,14 +7,14 @@ param(
 try {
     Start-Transcript -Path "$PSScriptRoot\Build.txt" -Append -Force
     # Ill put these in a module later.
-    Get-ChildItem -Path $PSScriptRoot -Filter '*.ps1' | Where-Object { $_.name -ne 'old.ps1' -and $_.name -ne 'Publish-CULab.ps1' } | ForEach-Object { . $_.FullName }
+    Get-ChildItem -Path $PSScriptRoot -Filter '*.ps1' | Where-Object { $_.name -ne 'old.ps1' -and $_.name -ne 'Publish-CULab.ps1' } | ForEach-Object { Import-Module $_.FullName -Force }
     
     # Ensure necessary components are installed and configured
     Confirm-HyperV
     Confirm-RequiredModules
 
     # Import configuration
-    Write-Host "Importing Config"
+    Write-ScreenInfo "Importing Config"
     $Config = [CUConfig]::new()
     $Config.ImportFromJson($ConfigPath)
     Confirm-LabSources -DriveLetter $Config.DriveLetter | Out-Null
@@ -25,6 +25,8 @@ try {
     Get-LabDefinition
     Install-Lab
 
+    Checkpoint-LabVM -All -SnapshotName "Before CU Products"
+    
     # Install-MonitorService -Config $Config
     # Install-AgentService -Config $Config
     # Install-Hive -Config $Config

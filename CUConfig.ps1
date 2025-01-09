@@ -7,6 +7,7 @@ class Domain {
     [string] $NatAddressBase
     [string] $NatSubnet
     [string] $NatIPAddress
+    [int] $HyperVAccessVLANID
 }
 
 class VirtualMachine {
@@ -62,6 +63,34 @@ class CUConfig {
         return $this.VirtualMachines | Where-Object { $_.Roles -contains 'Routing' }
     }
 
+    [VirtualMachine[]] GetRTDX([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.RTDX -eq $true -and $_.DomainName -eq $domainName }
+    }
+
+    [VirtualMachine[]] GetEdgeDX([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.EdgeDX -eq $true -and $_.DomainName -eq $domainName }
+    }
+
+    [VirtualMachine[]] GetHives([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.Hive -eq $true -and $_.DomainName -eq $domainName  }
+    }
+
+    [VirtualMachine[]] GetMonitors([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.Monitor -eq $true -and $_.DomainName -eq $domainName }
+    }
+
+    [VirtualMachine[]] GetDomainControllers([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.Roles -contains 'DC' -and $_.DomainName -eq $domainName }
+    }
+
+    [VirtualMachine[]] GetRootDomainControllers([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.Roles -contains 'RootDC' -and $_.DomainName -eq $domainName }
+    }
+
+    [VirtualMachine[]] GetRouting([string] $domainName) {
+        return $this.VirtualMachines | Where-Object { $_.Roles -contains 'Routing' -and $_.DomainName -eq $domainName }
+    }
+
     [void] ImportFromJson([string] $path) {
         $jsonObj = Get-Content -Path $path | ConvertFrom-Json
         $this.LabName = $jsonObj.LabName
@@ -96,6 +125,7 @@ class CUConfig {
             $obj.NatAddressBase = $domain.NatAddressBase
             $obj.NatSubnet = $domain.NatSubnet
             $obj.NatIPAddress = $domain.NatIPAddress
+            $obj.HyperVAccessVLANID = $domain.HyperVAccessVLANID
             $obj
         }
     }
