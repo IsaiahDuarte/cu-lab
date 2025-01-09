@@ -1,32 +1,44 @@
 {
     "Description": "Testing multidomain",
     "LabName": "multidomain",
-    "OrgName": "",
     "DriveLetter": "C",
+    "OrgName": "",
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
-    "ScoutbeesKey": "",
     "Domains": [
         {
             "Name": "site1.internal",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!"
+            "Password": "MySecurePassword123!",
+            "NetworkBase": "192.168.103",
+            "Subnet": "192.168.103.0/24",
+            "NatSubnet": "192.168.104.0/24",
+            "NatAddressBase": "192.168.104",
+            "NatIPAddress": "192.168.104.10"
         },
         {
             "Name": "site2.internal",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!"
+            "Password": "MySecurePassword123!",
+            "Subnet": "192.168.105.0/24",
+            "NatSubnet": "192.168.106.0/24",
+            "NatAddressBase": "192.168.106",
+            "NatIPAddress": "192.168.106.10"
         }
     ],
     "VirtualMachines": [
         {
             "Name": "site1-dc",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "2147483648",
+            "RAM": "4294967296",
             "CPU": "1",
             "DomainName": "site1.internal",
-            "Roles": ["RootDC", "Routing"],
+            "IpAddress": "192.168.103.10",
+            "Roles": [
+                "RootDC",
+                "Routing"
+            ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
@@ -35,10 +47,14 @@
         {
             "Name": "site2-dc",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "2147483648",
+            "RAM": "4294967296",
             "CPU": "1",
             "DomainName": "site2.internal",
-            "Roles": ["RootDC", "Routing"],
+            "IpAddress": "192.168.105.10",
+            "Roles": [
+                "RootDC",
+                "Routing"
+            ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
@@ -47,9 +63,10 @@
         {
             "Name": "site1-rt",
             "OS": "Windows 11 Pro",
-            "RAM": "1073741824",
+            "RAM": "2147483648",
             "CPU": "1",
             "DomainName": "site1.internal",
+            "IpAddress": "192.168.103.11",
             "Roles": [],
             "RTDX": true,
             "EdgeDX": false,
@@ -59,9 +76,10 @@
         {
             "Name": "site2-rt",
             "OS": "Windows 11 Pro",
-            "RAM": "1073741824",
+            "RAM": "2147483648",
             "CPU": "1",
             "DomainName": "site2.internal",
+            "IpAddress": "192.168.105.11",
             "Roles": [],
             "RTDX": true,
             "EdgeDX": false,
