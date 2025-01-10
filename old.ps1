@@ -9,54 +9,54 @@ try {
     Start-Transcript -Path ".\BuildLog.txt" -Append
 
     # This technically only works on Windows, On a Windows Server you have to use Install-WindowsFeature -Name Hyper-V -IncludeAllSubFeature -IncludeManagementTools
-    Write-Host "seeing if Hyper-V is installed"
+    Write-ScreenInfo "seeing if Hyper-V is installed"
     if(-not(Get-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Hyper-V')) {
-        Write-Host "Hyper-V is not installed. Installing Hyper-V now."
+        Write-ScreenInfo "Hyper-V is not installed. Installing Hyper-V now."
         Enable-WindowsOptionalFeature -FeatureName 'Microsoft-Hyper-V' -Online -All
         Restart-Computer -Force
     }
 
-    Write-Host "Importing Config"
+    Write-ScreenInfo "Importing Config"
     $Config = [CUConfig]::new()
     $Config.ImportFromJson($ConfigPath)
 
-    Write-Host "Checking if AutomatedLab is installed"
+    Write-ScreenInfo "Checking if AutomatedLab is installed"
     if(-not(Get-Module -Name AutomatedLab -ListAvailable)) {
-        Write-Host "AutomatedLab module is not installed. Installing AutomatedLab now."
+        Write-ScreenInfo "AutomatedLab module is not installed. Installing AutomatedLab now."
         Install-Module AutomatedLab -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
     }
     Import-Module AutomatedLab
 
-    Write-Host "Checking if Lab Sources are configured"
+    Write-ScreenInfo "Checking if Lab Sources are configured"
     if((Get-LabSourcesLocation -Local) -notcontains "$($Config.DriveLetter):\LabSources") {
         New-LabSourcesFolder -DriveLetter $Config.DriveLetter -Force
         $folder = "$($Config.DriveLetter):\LabSources"
         Clear-Host
-        Write-Host -ForegroundColor 'White' "Please copy the following to $folder and press enter to continue"
-        Write-Host -ForegroundColor 'Yellow' "Download Windows Server 2022 and place ISO here - $folder\ISOs"
-        Write-Host -ForegroundColor 'Yellow' "Download Windows 11 ISO and place here - $folder\ISOs"
-        Write-Host -ForegroundColor 'Yellow' "Download ControlUp Console and place here - $folder\SoftwarePackages"
-        Write-Host -ForegroundColor 'Yellow' "Download Hive and place here - $folder\SoftwarePackages"
-        Write-Host -ForegroundColor 'Yellow'"Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'White' "Please copy the following to $folder and press enter to continue"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Windows Server 2022 and place ISO here - $folder\ISOs"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Windows 11 ISO and place here - $folder\ISOs"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download ControlUp Console and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Hive and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'Yellow'"Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
         Read-Host
     }
     $LabLocation = Get-LabSourcesLocation -Local | Where-Object { $_ -like "$($Config.DriveLetter):\*" }
-    Write-Host "Lab location is $LabLocation"
+    Write-ScreenInfo "Lab location is $LabLocation"
 
-    Write-Host "Checking if Lab $($Config.LabName) exists"
+    Write-ScreenInfo "Checking if Lab $($Config.LabName) exists"
     if((Get-LabDefinition).Name -contains $Config.LabName) {
-        Write-Host "Lab $($Config.LabName) already exists. Removing it now."
+        Write-ScreenInfo "Lab $($Config.LabName) already exists. Removing it now."
         Remove-Lab -Name $Config.LabName -Confirm:$false -ErrorAction SilentlyContinue
     }
 
-    Write-Host "Creating lab $($Config.LabName)"
+    Write-ScreenInfo "Creating lab $($Config.LabName)"
     New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
     $LabMachines = New-Object System.Collections.Generic.List[VirtualMachine]
     Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
 
     foreach($domain in $Config.Domains) {
-        Write-Host "Processing $($domain.Name)"
+        Write-ScreenInfo "Processing $($domain.Name)"
         Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
         $domainAdatperName = $Config.LabName + "." + $Domain.Name
         Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
@@ -67,7 +67,7 @@ try {
 
         foreach($vm in $Config.VirtualMachines.Where({$_.DomainName -eq $domain.Name})) {
             if($vm -in $LabMachines) { Continue }
-            Write-Host "Adding $($VM.Name)"
+            Write-ScreenInfo "Adding $($VM.Name)"
             $splat = @{
                 Name = $vm.Name
                 OperatingSystem = $vm.OS
@@ -111,7 +111,7 @@ try {
         $LabMachines.Add($vm)    
     }
 
-    Write-Host "Installing Lab $($Config.LabName)"
+    Write-ScreenInfo "Installing Lab $($Config.LabName)"
     Install-Lab
 
     if($Config.Domains.Count -gt 0) {
@@ -159,7 +159,7 @@ try {
     Invoke-LabCommand -ComputerName $Config.GetMonitors()[0].Name -ActivityName 'Moving ControlUp Monitor Object' -ScriptBlock {
         $json = $StrippedConfig | ConvertTo-Json -Compress -Depth 4
         $Arguments = ("/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1 -json " + $json)
-        Write-Host $Arguments
+        Write-ScreenInfo $Arguments
         Start-Process -FilePath "C:\psexec.exe" -ArgumentList $Arguments -Wait -RedirectStandardOutput 'C:\scripts.\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
     } -Variable (Get-Variable -Name StrippedConfig)
 
@@ -183,7 +183,7 @@ try {
     Send-ALNotification -Activity 'ControlUp Configuration Complete' -Message "Installed configuration" -Provider 'Toast'
     Show-LabDeploymentSummary -Detailed
 } catch {
-    Write-Host "Error: $($_.Exception.Message)"
+    Write-ScreenInfo "Error: $($_.Exception.Message)"
 } finally {
     Stop-Transcript
 }

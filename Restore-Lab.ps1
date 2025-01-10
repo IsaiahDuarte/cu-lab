@@ -9,6 +9,6 @@ function Restore-Lab {
         [System.Exception] $Exception
     )
 
-    Write-Host "Error: $($Exception.Message)"
+    Write-ScreenInfo "Error: $($Exception.Message)"
     Clear-Lab
 }

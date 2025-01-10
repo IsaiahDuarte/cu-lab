@@ -24,9 +24,14 @@ try {
     
     Get-LabDefinition
     Install-Lab
+    # Configure the VLANs
+    $Config.Domains | Foreach-Object {
+        $DomainAdapter = "$($Config.LabName).$($_.Name)"
+        Set-VMNetworkAdapterVlan -ManagementOS -VMNetworkAdapterName $DomainAdapter -VlanId $_.HyperVAccessVLANID
+    }
 
-    Checkpoint-LabVM -All -SnapshotName "Before CU Products"
-    
+    Checkpoint-LabVM -All -SnapshotName "BeforeControlUpConfiguration_$(Get-Date -Format "MMddyyyy_HHmm")"
+
     # Install-MonitorService -Config $Config
     # Install-AgentService -Config $Config
     # Install-Hive -Config $Config

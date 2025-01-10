@@ -15,7 +15,7 @@ function Install-AgentService {
         [CUConfig] $Config
     )
 
-    Write-Host "Installing ControlUp Agent Service"
+    Write-ScreenInfo "Installing ControlUp Agent Service"
     # Install Agent Service
     foreach($Agent in $Config.GetRTDX()) {
         if($Agent.name -in $Config.GetMonitors().Name) { Continue }

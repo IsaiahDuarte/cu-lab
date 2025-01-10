@@ -15,7 +15,7 @@ function Install-EdgeDX {
         [CUConfig] $Config
     )
 
-    Write-Host "Installing EdgeDX"
+    Write-ScreenInfo "Installing EdgeDX"
 
     # Install EdgeDX
     $Params = "/qn DEVREGCODE=$($Config.DEVREGCODE) TENANT=$($Config.TENANT) ALLUSERS=1"

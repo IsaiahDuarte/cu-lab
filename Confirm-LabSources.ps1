@@ -13,20 +13,20 @@ function Confirm-LabSources {
     )
 
     # I want to automate some of this.
-    Write-Host "Checking if Lab Sources are configured"
+    Write-ScreenInfo "Checking if Lab Sources are configured"
     if ((Get-LabSourcesLocation -Local) -notcontains "$($DriveLetter):\LabSources") {
         New-LabSourcesFolder -DriveLetter $DriveLetter -Force
         $folder = "$($DriveLetter):\LabSources"
         Clear-Host
-        Write-Host -ForegroundColor 'White' "Please copy the following to $folder and press enter to continue"
-        Write-Host -ForegroundColor 'Yellow' "Download Windows Server 2022 and place ISO here - $folder\ISOs"
-        Write-Host -ForegroundColor 'Yellow' "Download Windows 11 ISO and place here - $folder\ISOs"
-        Write-Host -ForegroundColor 'Yellow' "Download ControlUp Console and place here - $folder\SoftwarePackages"
-        Write-Host -ForegroundColor 'Yellow' "Download Hive and place here - $folder\SoftwarePackages"
-        Write-Host -ForegroundColor 'Yellow' "Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'White' "Please copy the following to $folder and press enter to continue"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Windows Server 2022 and place ISO here - $folder\ISOs"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Windows 11 ISO and place here - $folder\ISOs"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download ControlUp Console and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download Hive and place here - $folder\SoftwarePackages"
+        Write-ScreenInfo -ForegroundColor 'Yellow' "Download agentmanagersetup.msi and place here - $folder\SoftwarePackages"
         Read-Host -Prompt "Press Enter to continue after copying files"
     }
     $LabLocation = Get-LabSourcesLocation -Local | Where-Object { $_ -like "$($DriveLetter):\*" }
-    Write-Host "Lab location is $LabLocation"
+    Write-ScreenInfo "Lab location is $LabLocation"
     return $LabLocation
 }

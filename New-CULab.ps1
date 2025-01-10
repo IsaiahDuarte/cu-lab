@@ -21,13 +21,13 @@ function New-CULab {
         [CUConfig] $Config
     )
 
-    Write-Host "Creating lab $($Config.LabName)"
+    Write-ScreenInfo "Creating lab $($Config.LabName)"
     New-LabDefinition -Name $Config.LabName -DefaultVirtualizationEngine HyperV
 
     $LabMachines = New-Object System.Collections.Generic.List[VirtualMachine]
 
     foreach ($domain in $Config.Domains) {
-        Write-Host "Processing domain $($domain.Name)"
+        Write-ScreenInfo "Processing domain $($domain.Name)"
         Add-LabDomainDefinition -Name $domain.Name -AdminUser $domain.Username -AdminPassword $domain.Password
         
         $domainAdapterName = "$($Config.LabName).$($domain.Name)"
@@ -47,13 +47,13 @@ function New-CULab {
         $RootDC = $Config.GetRootDomainControllers() | Where-Object {$_.DomainName -eq $domain.Name}
 
         $RoutingAdapters = @(
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName -Ipv4Address $RouterVM.IpAddress),
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1") -Ipv4DNSServers $RootDC.IpAddress)# => Manually doing this for now. #-AccessVLANID $domain.HyperVAccessVLANID)
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName -Ipv4Address $RouterVM.IpAddress ) # For full isolation of domains, this needs to be set. Manually for now though. -AccessVLANID $domain.HyperVAccessVLANID),
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1") -Ipv4DNSServers $RootDC.IpAddress)
         )
 
         foreach ($vm in $Config.VirtualMachines | Where-Object { $_.DomainName -eq $domain.Name }) {
             if ($vm -in $LabMachines) { continue }
-            Write-Host "Adding VM $($vm.Name)"
+            Write-ScreenInfo "Adding VM $($vm.Name)"
             $splat = @{
                 Name                = $vm.Name
                 OperatingSystem     = $vm.OS
