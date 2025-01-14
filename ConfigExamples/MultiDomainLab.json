@@ -29,32 +29,26 @@
     ],
     "VirtualMachines": [
         {
-            "Name": "site1-dc",
+            "Name": "site1-monitor",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "4294967296",
-            "CPU": "1",
+            "CPU": "2",
             "DomainName": "site1.internal",
             "IpAddress": "192.168.103.10",
-            "Roles": [
-                "RootDC",
-                "Routing"
-            ],
+            "Roles": [ "RootDC", "Routing" ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
             "Monitor": true
         },
         {
-            "Name": "site2-dc",
+            "Name": "site2-monitor",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "4294967296",
-            "CPU": "1",
+            "CPU": "2",
             "DomainName": "site2.internal",
             "IpAddress": "192.168.105.10",
-            "Roles": [
-                "RootDC",
-                "Routing"
-            ],
+            "Roles": [ "RootDC", "Routing" ],
             "RTDX": true,
             "EdgeDX": false,
             "Hive": false,
@@ -64,7 +58,7 @@
             "Name": "site1-rt",
             "OS": "Windows 11 Pro",
             "RAM": "2147483648",
-            "CPU": "1",
+            "CPU": "2",
             "DomainName": "site1.internal",
             "IpAddress": "192.168.103.11",
             "Roles": [],
@@ -77,7 +71,7 @@
             "Name": "site2-rt",
             "OS": "Windows 11 Pro",
             "RAM": "2147483648",
-            "CPU": "1",
+            "CPU": "2",
             "DomainName": "site2.internal",
             "IpAddress": "192.168.105.11",
             "Roles": [],

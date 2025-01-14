@@ -1,13 +1,13 @@
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [ValidateScript({ Test-Path $_ -PathType Leaf })]
-    [string] $ConfigPath
+    [string] $ConfigPath = "$PSScriptRoot\ConfigExamples\MacroPlus.json"
 )
 
 try {
     Start-Transcript -Path "$PSScriptRoot\Build.txt" -Append -Force
     # Ill put these in a module later.
-    Get-ChildItem -Path $PSScriptRoot -Filter '*.ps1' | Where-Object { $_.name -ne 'old.ps1' -and $_.name -ne 'Publish-CULab.ps1' } | ForEach-Object { Import-Module $_.FullName -Force }
+    Get-ChildItem -Path $PSScriptRoot -Filter '*.ps1' | Where-Object { $_.name -ne 'Publish-CULab.ps1' } | ForEach-Object { Import-Module $_.FullName -Force }
     
     # Ensure necessary components are installed and configured
     Confirm-HyperV
@@ -21,21 +21,15 @@ try {
 
     # Set up the lab and install services
     New-CULab -Config $Config
-    
-    Get-LabDefinition
-    Install-Lab
-    # Configure the VLANs
-    $Config.Domains | Foreach-Object {
-        $DomainAdapter = "$($Config.LabName).$($_.Name)"
-        Set-VMNetworkAdapterVlan -ManagementOS -VMNetworkAdapterName $DomainAdapter -VlanId $_.HyperVAccessVLANID
-    }
+    Install-Lab 
 
     Checkpoint-LabVM -All -SnapshotName "BeforeControlUpConfiguration_$(Get-Date -Format "MMddyyyy_HHmm")"
 
-    # Install-MonitorService -Config $Config
-    # Install-AgentService -Config $Config
-    # Install-Hive -Config $Config
-    # Install-EdgeDX -Config $Config
+    Install-MonitorService -Config $Config
+    Set-CUFolderTree -Config $Config
+    Install-AgentService -Config $Config
+    Install-CustomHive -Config $Config
+    Install-EdgeDX -Config $Config
 
     Send-ALNotification -Activity 'ControlUp Configuration Complete' -Message "Installed configuration" -Provider 'Toast'
     Show-LabDeploymentSummary -Detailed

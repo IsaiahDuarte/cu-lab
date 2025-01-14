@@ -1,26 +1,32 @@
 {
     "Description": "This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)",
     "LabName": "MacroPlusLab",
-    "OrgName": "OnlyAdmins",
     "DriveLetter": "C",
+    "OrgName": "",
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
-    "ScoutbeesKey": "",
+    "ScoutBeesKey": "",
     "Domains": [
         {
-            "Name": "macroplus.internal",
+            "Name": "macroplus.local",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!"
+            "Password": "MySecurePassword123!",
+            "NetworkBase": "192.168.103",
+            "Subnet": "192.168.103.0/24",
+            "NatSubnet": "192.168.104.0/24",
+            "NatAddressBase": "192.168.104",
+            "NatIPAddress": "192.168.104.10"
         }
     ],
     "VirtualMachines": [
         {
-            "Name": "monitor-1",
+            "Name": "monitor",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "4294967296",
-            "CPU": "1",
-            "DomainName": "macroplus.internal",
+            "CPU": "2",
+            "DomainName": "macroplus.local",
+            "IpAddress": "192.168.103.10",
             "Roles": [ "RootDC", "Routing" ],
             "RTDX": true,
             "EdgeDX": false,
@@ -28,11 +34,12 @@
             "Monitor": true
         },
         {
-            "Name": "win11-1",
-            "OS": "Windows 11 Pro",
+            "Name": "client",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
             "RAM": "2147483648",
-            "CPU": "1",
-            "DomainName": "macroplus.internal",
+            "CPU": "2",
+            "DomainName": "macroplus.local",
+            "IpAddress": "192.168.103.11",
             "Roles": [ ],
             "RTDX": true,
             "EdgeDX": true,

@@ -1,12 +1,10 @@
 # cu-lab
-
-### Summary
 **This is not done yet.**
+### Summary
 
 This repository leverages [AutomatedLab](https://github.com/AutomatedLab/AutomatedLab) to easily configure a ControlUp environment on Hyper-V. The lab structure is defined via a JSON configuration file.
 
 For quick setup, please refer to the [Quick Start](#quick-start) section.
-
 
 ### Requirements
 To set up a full CU Lab, you will need the following:
@@ -23,79 +21,37 @@ To set up a full CU Lab, you will need the following:
 
 ### JSON Configuration
 `New-CULab.ps1` dynamically adds machines to your lab based on the provided JSON configuration file.
-
-Example configurations:
-This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)
+This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 EdgeDX device on the same server
 ```json
 {
-    "Description": "This is an example configuration file for a lab with 1 Server (Monitor) and 1 Client (RT-Agent, Scoutbees, EdgeDX)",
-    "LabName": "MacroPlusLab-02",
-    "OrgName": "",
-    "DriveLetter": "C",
-    "DEXKey": "",
-    "DEVREGCODE": "",
-    "TENANT": "",
-    "ScoutbeesKey": "",
-    "Domains": [
-        {
-            "Name": "macroplus.internal",
-            "Username": "Administrator",
-            "Password": "MySecurePassword123!"
-        }
-    ],
-    "VirtualMachines": [
-        {
-            "Name": "monitor-1",
-            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "4294967296",
-            "CPU": "1",
-            "DomainName": "macroplus.internal",
-            "Roles": ["RootDC", "Routing"],
-            "RTDX": true,
-            "EdgeDX": false,
-            "Hive": false,
-            "Monitor": true
-        },
-        {
-            "Name": "win11-1",
-            "OS": "Windows 11 Pro",
-            "RAM": "2147483648",
-            "CPU": "1",
-            "DomainName": "macroplus.internal",
-            "Roles": [],
-            "RTDX": true,
-            "EdgeDX": true,
-            "Hive": true,
-            "Monitor": false
-        }
-    ]
-}
-```
-This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server
-```json
-{
-    "Description": "This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 EdgeDX device on the same Server",
+    "Description": "This is an example configuration file for a lab with 1 VM hosting all CU services using 4.5 GB of RAM",
     "LabName": "MacroCULab",
-    "OrgName": "",
     "DriveLetter": "C",
+    "OrgName": "",
     "DEXKey": "",
     "DEVREGCODE": "",
     "TENANT": "",
-    "ScoutbeesKey": "",
+    "ScoutBeesKey": "",
     "Domains": [
         {
-            "Name": "macroculab.internal",
+            "Name": "macro.local",
             "Username": "Administrator",
-            "Password": "MySecurePassword123!"
+            "Password": "MySecurePassword123!",
+            "NetworkBase": "192.168.103",
+            "Subnet": "192.168.103.0/24",
+            "NatSubnet": "192.168.104.0/24",
+            "NatAddressBase": "192.168.104",
+            "NatIPAddress": "192.168.104.10"
         }
     ],
     "VirtualMachines": [
         {
             "Name": "monitor",
             "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
-            "RAM": "4294967296",
+            "RAM": "4831838208",
             "CPU": "2",
-            "DomainName": "macroculab.internal",
+            "DomainName": "macro.local",
+            "IpAddress": "192.168.103.10",
             "Roles": [ "RootDC", "Routing" ],
             "RTDX": true,
             "EdgeDX": true,
@@ -129,15 +85,20 @@ This is an example configuration file for a lab with 1 DC, 1 monitor, 1 Hive, 1 
 - **EdgeDX**: If true, installs the EdgeDX Agent with configuration properties.
 - **Hive**: If true, installs the Scoutbees Custom Hive software.
 - **Monitor**: If true, installs ControlUp Monitor using ControlUp.Automation.
+- **IpAddress**: Static IP address assigned to the VM.
 
 ### Domain Properties:
 - **Name**: Name of the new domain
 - **Username**: Specifies the username of the domain admin
 - **Password**: Specifies the password of the domain admin
+- **NetworkBase**: Base IP for your domain network.
+- **Subnet**: Main subnet for domain traffic.
+- **NatSubnet**: NAT-based subnet used for domain routing.
+- **NatAddressBase**: Base NAT address for domain traffic.
+- **NatIPAddress**: IP address used for NAT translation.
 
 **Note:** The script assumes a routing role is included in the configuration.
 **Note:** The RootDC VM has to be at the start of the VM array
-**Note:** Currently only one domain is supported.
 
 More examples can be found in [ConfigExamples](ConfigExamples)
 
@@ -167,7 +128,7 @@ Once the script is done, you should have entries in your host file for the new V
 ![DeployedLab](images/DeployedLab.png)
 
 **To add the host and hyperv connection**:
-1. Add the lab adapter ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
+1. Add the lab domain adapter ip and name to the hostfile on the monitor, example: `192.168.12.1 ISAIAHD-WIN-US`
 2. Manually install the CUAgent and set the inbound registry key `Set-ItemProperty -Path "HKLM:\SOFTWARE\Smart-X\ControlUp\Agent\Communication" -Name "Outbound" -Value 0`
 3. Restart the Agent
 4. Launch the console on the monitor
@@ -180,12 +141,6 @@ For more information, see the [AutomatedLab documentation](https://automatedlab.
 
 **Scoutbees**:
 This only installs Scoutbees, you will need to add the hive key manually.
-
-### Upcoming
-- Versioning for CU Products
-- RDC generated file
-- Seperate deployment folders for monitors vs agents etc
-- Winget integration
 
 ### References
 

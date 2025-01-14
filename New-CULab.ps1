@@ -40,14 +40,14 @@ function New-CULab {
         Get-NetNat | Where-Object {$_.name -eq $domainNatAdapterName} | Remove-NetNat -Confirm:$false
         New-NetNat -Name $domainNatAdapterName -InternalIPInterfaceAddressPrefix $domain.NatSubnet
         
-        # Each domain gets its own internal adapter
+        # Each domain gets its own private adapter
         Add-LabVirtualNetworkDefinition -Name $domainAdapterName -AddressSpace $domain.Subnet
 
         $RouterVM = $Config.GetRouting() | Where-Object {$_.DomainName -eq $domain.Name}
         $RootDC = $Config.GetRootDomainControllers() | Where-Object {$_.DomainName -eq $domain.Name}
 
         $RoutingAdapters = @(
-            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName -Ipv4Address $RouterVM.IpAddress ) # For full isolation of domains, this needs to be set. Manually for now though. -AccessVLANID $domain.HyperVAccessVLANID),
+            (New-LabNetworkAdapterDefinition -VirtualSwitch $domainAdapterName -Ipv4Address $RouterVM.IpAddress )
             (New-LabNetworkAdapterDefinition -VirtualSwitch $domainNatAdapterName -Ipv4Address $domain.NatIPAddress -Ipv4Gateway ("$($domain.NatAddressBase).1") -Ipv4DNSServers $RootDC.IpAddress)
         )
 
@@ -67,7 +67,7 @@ function New-CULab {
                 IpAddress           = $vm.IpAddress
                 NetworkAdapter      = $null
                 Gateway             = $RouterVM.IpAddress
-                DnsServer1           = $RootDC.IpAddress
+                DnsServer1          = $RootDC.IpAddress
             }
 
             if($vm.Roles -contains 'Routing') {

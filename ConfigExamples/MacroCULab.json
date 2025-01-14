@@ -1,0 +1,37 @@
+{
+    "Description": "This is an example configuration file for a lab with 1 VM hosting all CU services using 4.5 GB of RAM",
+    "LabName": "MacroCULab",
+    "DriveLetter": "C",
+    "OrgName": "",
+    "DEXKey": "",
+    "DEVREGCODE": "",
+    "TENANT": "",
+    "ScoutBeesKey": "",
+    "Domains": [
+        {
+            "Name": "macro.local",
+            "Username": "Administrator",
+            "Password": "MySecurePassword123!",
+            "NetworkBase": "192.168.103",
+            "Subnet": "192.168.103.0/24",
+            "NatSubnet": "192.168.104.0/24",
+            "NatAddressBase": "192.168.104",
+            "NatIPAddress": "192.168.104.10"
+        }
+    ],
+    "VirtualMachines": [
+        {
+            "Name": "monitor",
+            "OS": "Windows Server 2022 Standard Evaluation (Desktop Experience)",
+            "RAM": "4831838208",
+            "CPU": "2",
+            "DomainName": "macro.local",
+            "IpAddress": "192.168.103.10",
+            "Roles": [ "RootDC", "Routing" ],
+            "RTDX": true,
+            "EdgeDX": true,
+            "Hive": true,
+            "Monitor": true
+        }
+    ]
+}

@@ -7,7 +7,6 @@ class Domain {
     [string] $NatAddressBase
     [string] $NatSubnet
     [string] $NatIPAddress
-    [int] $HyperVAccessVLANID
 }
 
 class VirtualMachine {
@@ -125,7 +124,6 @@ class CUConfig {
             $obj.NatAddressBase = $domain.NatAddressBase
             $obj.NatSubnet = $domain.NatSubnet
             $obj.NatIPAddress = $domain.NatIPAddress
-            $obj.HyperVAccessVLANID = $domain.HyperVAccessVLANID
             $obj
         }
     }

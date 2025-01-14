@@ -19,5 +19,10 @@ function Install-EdgeDX {
 
     # Install EdgeDX
     $Params = "/qn DEVREGCODE=$($Config.DEVREGCODE) TENANT=$($Config.TENANT) ALLUSERS=1"
-    Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $Config.GetEdgeDX().Name -CommandLine $Params    
+    foreach($domain in $Config.Domains) {
+        Set-LabInstallationCredential -Username $domain.Username -Password $domain.Password
+        Install-LabSoftwarePackage -Path $LabSources\SoftwarePackages\agentmanagersetup.msi -ComputerName $Config.GetEdgeDX($domain.Name).Name -CommandLine $Params    
+    }
 }
+
+
