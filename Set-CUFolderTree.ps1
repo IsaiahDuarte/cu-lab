@@ -47,14 +47,14 @@ function Set-CUFolderTree {
     $MonitorToExecute = $Config.GetMonitors()[0].Name
     $FolderList | ConvertTo-Json | Out-File .\folderlist.json
     $MonitorList | ConvertTo-Json | Out-File .\monitorlist.json
-    Copy-LabFileItem -Path .\folderlist.json -ComputerName $MonitorToExecute -DestinationFolderPath "C:\scripts\"
-    Copy-LabFileItem -Path .\monitorlist.json -ComputerName $MonitorToExecute -DestinationFolderPath "C:\scripts\"
+    Copy-LabFileItem -Path .\folderlist.json -ComputerName $MonitorToExecute -DestinationFolderPath "C:\Monitor\"
+    Copy-LabFileItem -Path .\monitorlist.json -ComputerName $MonitorToExecute -DestinationFolderPath "C:\Mpnitor\"
 
     Remove-Item .\folderlist.json
     Remove-Item .\monitorlist.json
 
     Invoke-LabCommand -ComputerName $MonitorToExecute -ActivityName 'Moving ControlUp Monitor Object' -ScriptBlock {
-        $Arguments = ("/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\scripts\Setup-Tree.ps1")
-        Start-Process -FilePath "C:\psexec.exe" -ArgumentList $Arguments -Wait -RedirectStandardOutput 'C:\scripts\psexec-setup-tree.log' -RedirectStandardError 'C:\scripts\psexec-error-setup-tree.log'
+        $Arguments = ("/accepteula -s Powershell.exe -ExecutionPolicy Bypass -File C:\Monitor\Setup-Tree.ps1")
+        Start-Process -FilePath "C:\psexec.exe" -ArgumentList $Arguments -Wait -RedirectStandardOutput 'C:\Monitor\psexec-setup-tree.log' -RedirectStandardError 'C:\Monitor\psexec-error-setup-tree.log'
     }
 }

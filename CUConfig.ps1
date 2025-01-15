@@ -12,7 +12,8 @@ class Domain {
 class VirtualMachine {
     [string] $Name
     [string] $OS
-    [string] $RAM
+    [long] $MinRAM
+    [long] $RAM
     [string] $CPU
     [string] $DomainName
     [string[]] $Roles
@@ -103,6 +104,7 @@ class CUConfig {
             $obj = [VirtualMachine]::new()
             $obj.Name = $vm.Name
             $obj.OS = $vm.OS
+            $obj.MinRAM = $vm.MinRAM
             $obj.RAM = $vm.RAM
             $obj.CPU = $vm.CPU
             $obj.Roles = $vm.Roles

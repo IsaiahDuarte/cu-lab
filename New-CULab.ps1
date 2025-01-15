@@ -57,6 +57,8 @@ function New-CULab {
             $splat = @{
                 Name                = $vm.Name
                 OperatingSystem     = $vm.OS
+                MinMemory           = $vm.MinRAM
+                MaxMemory           = $vm.RAM
                 Memory              = $vm.RAM
                 Processors          = $vm.CPU
                 DomainName          = $vm.DomainName
